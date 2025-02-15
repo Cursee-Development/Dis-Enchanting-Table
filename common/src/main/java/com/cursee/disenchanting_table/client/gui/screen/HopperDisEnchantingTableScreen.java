@@ -20,8 +20,14 @@ public class HopperDisEnchantingTableScreen extends AbstractContainerScreen<Hopp
         this.inventoryLabelY += 9999;
     }
 
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(guiGraphics);
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        this.renderTooltip(guiGraphics, mouseX, mouseY);
+    }
+
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float v, int i, int i1) {
+    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         guiGraphics.blit(DisEnchantingTableScreen.BACKGROUND, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
         // draw crafting progress as a string for debugging

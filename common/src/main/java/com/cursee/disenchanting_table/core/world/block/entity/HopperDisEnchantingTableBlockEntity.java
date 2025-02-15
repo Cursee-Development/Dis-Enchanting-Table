@@ -1,25 +1,36 @@
 package com.cursee.disenchanting_table.core.world.block.entity;
 
+import com.cursee.disenchanting_table.Constants;
 import com.cursee.disenchanting_table.client.gui.menu.HopperDisEnchantingTableMenu;
 import com.cursee.disenchanting_table.core.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public class HopperDisEnchantingTableBlockEntity extends BlockEntity implements MenuProvider, IContainer {
+import java.util.Map;
+
+public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntity implements MenuProvider, IContainer {
 
     private final NonNullList<ItemStack> inventory = NonNullList.withSize(3, ItemStack.EMPTY);
     private final ContainerData containerData;
@@ -30,6 +41,11 @@ public class HopperDisEnchantingTableBlockEntity extends BlockEntity implements 
     public HopperDisEnchantingTableBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.HOPPER_DISENCHANTING_TABLE, pos, state);
         this.containerData = new HopperDisenchantingTableData();
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        return Container.stillValidBlockEntity(this, player);
     }
 
     @Override
@@ -48,6 +64,18 @@ public class HopperDisEnchantingTableBlockEntity extends BlockEntity implements 
         return new HopperDisEnchantingTableMenu(containerID, inventory, this, this.containerData);
     }
 
+    /** From BaseContainerBlockEntity */
+    @Override
+    protected Component getDefaultName() {
+        return Component.literal("Hopper Dis-Enchanting Table");
+    }
+
+    /** From BaseContainerBlockEntity */
+    @Override
+    protected AbstractContainerMenu createMenu(int containerID, Inventory inventory) {
+        return new HopperDisEnchantingTableMenu(containerID, inventory, this, this.containerData);
+    }
+
     @Override
     protected void saveAdditional(CompoundTag data) {
         ContainerHelper.saveAllItems(data, this.inventory);
@@ -62,12 +90,96 @@ public class HopperDisEnchantingTableBlockEntity extends BlockEntity implements 
         ContainerHelper.loadAllItems(data, inventory);
     }
 
-    public void serverTick(Level level, BlockPos pos, BlockState state) {
-        if (level == null || level.getGameTime() % 20 != 0) return;
-        this.progress++;
-        if (this.progress >= this.maxProgress) {
-            this.progress = 0;
+    private boolean validInput() {
+        ItemStack input = this.getItem(0);
+        ItemStack additional = this.getItem(1);
+
+        boolean inputEnchanted = !EnchantmentHelper.getEnchantments(input).isEmpty();
+        boolean inputValidItem = inputEnchanted && !input.is(Items.ENCHANTED_BOOK);
+        boolean inputValidBook = inputEnchanted && EnchantedBookItem.getEnchantments(input).size() > 1;
+        boolean additionalBookFound = additional.is(Items.BOOK);
+
+        return (inputValidItem || inputValidBook) && additionalBookFound;
+    }
+
+    private boolean outputEmpty() {
+        return this.getItem(2).isEmpty();
+    }
+
+    private @Nullable Player nearestPlayer(Level level, BlockPos pos) {
+        return level.getNearestPlayer(TargetingConditions.forNonCombat(), pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    private boolean nearestPlayerHasEnoughExperience(Level level, BlockPos pos) {
+
+        Player player = this.nearestPlayer(level, pos);
+
+        if (player == null) return false;
+        if (player.experienceLevel > 0) return true; // todo fix hard-coded value
+
+        return false;
+    }
+
+    private @Nullable Enchantment keptEnchantment;
+    private @Nullable Integer keptEnchantmentLevel;
+    private @Nullable Map<Enchantment, Integer> stolenEnchantments;
+    private void disenchant(Level level, BlockPos pos) {
+
+        ItemStack input = this.getItem(0);
+
+        if (input.is(Items.ENCHANTED_BOOK)) {
+            this.stolenEnchantments = EnchantmentHelper.getEnchantments(input);
+            this.keptEnchantment = this.stolenEnchantments.keySet().iterator().next();
+            this.keptEnchantmentLevel = this.stolenEnchantments.get(this.keptEnchantment);
+            this.stolenEnchantments.remove(this.keptEnchantment);
+
+            ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
+            EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+            this.setItem(2, result);
+
+            if (this.keptEnchantment == null || this.keptEnchantmentLevel == null) return;
+            ItemStack keptEnchantedBook = EnchantedBookItem.createForEnchantment(new EnchantmentInstance(this.keptEnchantment, this.keptEnchantmentLevel));
+            this.setItem(0, keptEnchantedBook);
+
+            ItemStack bookStack = this.getItem(1);
+            bookStack.shrink(1);
+            this.setItem(1, bookStack);
         }
+        else {
+            this.stolenEnchantments = EnchantmentHelper.getEnchantments(input);
+            ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
+            EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+            this.setItem(2, result);
+
+            EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(ItemStack.EMPTY), input);
+            input.setRepairCost(0); // todo make this configurable
+            this.setItem(0, input);
+
+            ItemStack bookStack = this.getItem(1);
+            bookStack.shrink(1);
+            this.setItem(1, bookStack);
+        }
+
+        Player player = this.nearestPlayer(level, pos);
+        if (player == null) return; // player is never null here due to preceding nearestPlayerHasEnoughExperience
+        player.giveExperienceLevels(-1); // todo fix hard-coded value
+    }
+
+    public void serverTick(Level level, BlockPos pos, BlockState state) {
+
+        if (level == null) return;
+
+        if (this.validInput() && this.outputEmpty() && this.nearestPlayerHasEnoughExperience(level, pos)) {
+
+            this.progress += 1;
+            BlockEntity.setChanged(level, pos, state); // make sure the block entity is always saved to disk
+
+            if (this.progress >= this.maxProgress) {
+                this.disenchant(level, pos);
+                this.progress = 0;
+            }
+        }
+        else this.progress = 0;
     }
 
     private class HopperDisenchantingTableData implements ContainerData {
@@ -93,5 +205,42 @@ public class HopperDisEnchantingTableBlockEntity extends BlockEntity implements 
         public int getCount() {
             return 2;
         }
+    }
+
+    // handled by the slots in the menu ?
+    // @Override
+    // public boolean canPlaceItem(int $$0, ItemStack $$1) {
+    //     return super.canPlaceItem($$0, $$1);
+    // }
+
+    private static final int[] SLOTS_FOR_UP = new int[]{0}; // input enchanted item from the top
+    private static final int[] SLOTS_FOR_SIDES = new int[]{1}; // input normal books from the sides
+    private static final int[] SLOTS_FOR_DOWN = new int[]{2}; // output enchanted books from the bottom
+    @Override
+    public int[] getSlotsForFace(Direction side) {
+        return side == Direction.UP ? SLOTS_FOR_UP : side == Direction.DOWN ? SLOTS_FOR_DOWN : SLOTS_FOR_SIDES;
+    }
+
+    @Override
+    public boolean canPlaceItem(int slotIndex, ItemStack stack) {
+
+        boolean inputEnchanted = !EnchantmentHelper.getEnchantments(stack).isEmpty();
+        boolean inputValidItem = inputEnchanted && !stack.is(Items.ENCHANTED_BOOK);
+        boolean inputValidBook = inputEnchanted && EnchantedBookItem.getEnchantments(stack).size() > 1;
+
+        if (slotIndex == 0) return inputValidItem || inputValidBook;
+        if (slotIndex == 1) return stack.is(Items.BOOK);
+
+        return false;
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
+        return this.canPlaceItem(slot, stack);
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
+        return slot == 2;
     }
 }
