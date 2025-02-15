@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "disenchanting_table:block/hopper_disenchanting_table"
+    }
+  }
+}

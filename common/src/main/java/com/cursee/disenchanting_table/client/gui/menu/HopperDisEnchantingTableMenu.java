@@ -13,18 +13,22 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.jetbrains.annotations.Nullable;
 
+/** @see BrewingStandMenu */
 public class HopperDisEnchantingTableMenu extends AbstractContainerMenu {
 
     private final Container container;
+    private final ContainerData containerData;
 
     public HopperDisEnchantingTableMenu(int pContainerId, Inventory pPlayerInventory) {
-        this(pContainerId, pPlayerInventory, new SimpleContainer(3));
+        this(pContainerId, pPlayerInventory, new SimpleContainer(3), new SimpleContainerData(2));
     }
 
-    public HopperDisEnchantingTableMenu(int pContainerId, Inventory pPlayerInventory, Container pContainer) {
+    public HopperDisEnchantingTableMenu(int pContainerId, Inventory pPlayerInventory, Container pContainer, ContainerData pContainerData) {
         super(ModMenus.HOPPER_DISENCHANTING_MENU, pContainerId);
         checkContainerSize(pContainer, 3);
+        checkContainerDataCount(pContainerData, 2);
         this.container = pContainer;
+        this.containerData = pContainerData;
         pContainer.startOpen(pPlayerInventory.player);
 
         this.addSlot(new Slot(pContainer, 0, 27, 47) {
@@ -57,6 +61,9 @@ public class HopperDisEnchantingTableMenu extends AbstractContainerMenu {
             }
         });
 
+        this.addDataSlots(pContainerData);
+
+        // y offset to begin player slots at
         final int yOffset = (-1 * 18) - 1;
 
         // add player inventory slots
@@ -86,77 +93,37 @@ public class HopperDisEnchantingTableMenu extends AbstractContainerMenu {
 
         ItemStack newStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(pIndex);
-        if (slot != null && slot.hasItem()) {
-            ItemStack originalStack = slot.getItem();
-            newStack = originalStack.copy();
-            if (pIndex < this.container.getContainerSize()) {
-                if (!this.moveItemStackTo(originalStack, this.container.getContainerSize(), this.slots.size(), true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (!this.moveItemStackTo(originalStack, 0, this.container.getContainerSize(), false)) {
+        if (!slot.hasItem()) return newStack;
+
+        ItemStack originalStack = slot.getItem();
+        newStack = originalStack.copy();
+
+        final boolean itemMovedToPlayer = pIndex < this.container.getContainerSize();
+        if (itemMovedToPlayer) {
+            if (!this.moveItemStackTo(originalStack, this.container.getContainerSize(), this.slots.size(), true)) {
                 return ItemStack.EMPTY;
             }
+        }
+        else if (!this.moveItemStackTo(originalStack, 0, this.container.getContainerSize(), false)) {
+            return ItemStack.EMPTY;
+        }
 
-            if (originalStack.isEmpty()) {
-                slot.setByPlayer(ItemStack.EMPTY);
-            } else {
-                slot.setChanged();
-            }
+        if (originalStack.isEmpty()) {
+            slot.setByPlayer(ItemStack.EMPTY);
+        }
+        else {
+            slot.setChanged();
         }
 
         return newStack;
-
-        // return ItemStack.EMPTY;
-
-
-//        ItemStack itemstack = ItemStack.EMPTY;
-//        Slot slot = this.slots.get(pIndex);
-//        if (slot != null && slot.hasItem()) {
-//            ItemStack itemstack1 = slot.getItem();
-//            itemstack = itemstack1.copy();
-//            int i = this.getInventorySlotStart();
-//            int j = this.getUseRowEnd();
-//            if (pIndex == this.getResultSlot()) {
-//                if (!this.moveItemStackTo(itemstack1, i, j, true)) {
-//                    return ItemStack.EMPTY;
-//                }
-//
-//                slot.onQuickCraft(itemstack1, itemstack);
-//            } else if (this.inputSlotIndexes.contains(pIndex)) {
-//                if (!this.moveItemStackTo(itemstack1, i, j, false)) {
-//                    return ItemStack.EMPTY;
-//                }
-//            } else if (this.canMoveIntoInputSlots(itemstack1) && pIndex >= this.getInventorySlotStart() && pIndex < this.getUseRowEnd()) {
-//                int k = this.getSlotToQuickMoveTo(itemstack);
-//                if (!this.moveItemStackTo(itemstack1, k, this.getResultSlot(), false)) {
-//                    return ItemStack.EMPTY;
-//                }
-//            } else if (pIndex >= this.getInventorySlotStart() && pIndex < this.getInventorySlotEnd()) {
-//                if (!this.moveItemStackTo(itemstack1, this.getUseRowStart(), this.getUseRowEnd(), false)) {
-//                    return ItemStack.EMPTY;
-//                }
-//            } else if (pIndex >= this.getUseRowStart() && pIndex < this.getUseRowEnd() && !this.moveItemStackTo(itemstack1, this.getInventorySlotStart(), this.getInventorySlotEnd(), false)) {
-//                return ItemStack.EMPTY;
-//            }
-//
-//            if (itemstack1.isEmpty()) {
-//                slot.setByPlayer(ItemStack.EMPTY);
-//            } else {
-//                slot.setChanged();
-//            }
-//
-//            if (itemstack1.getCount() == itemstack.getCount()) {
-//                return ItemStack.EMPTY;
-//            }
-//
-//            slot.onTake(pPlayer, itemstack1);
-//        }
-//
-//        return itemstack;
     }
 
     @Override
     public boolean stillValid(Player pPlayer) {
         return this.container.stillValid(pPlayer);
+    }
+
+    public int getCraftingTicks() {
+        return this.containerData.get(0);
     }
 }
