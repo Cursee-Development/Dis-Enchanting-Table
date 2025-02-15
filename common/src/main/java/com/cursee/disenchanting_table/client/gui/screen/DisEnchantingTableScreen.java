@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class DisEnchantingTableScreen extends ItemCombinerScreen<DisEnchantingTableMenu> {
 
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(Constants.MOD_ID, "textures/gui/disenchanting.png");
+    public static final ResourceLocation BACKGROUND = new ResourceLocation(Constants.MOD_ID, "textures/gui/container/disenchanting_table.png");
 
     public DisEnchantingTableScreen(DisEnchantingTableMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, BACKGROUND);
