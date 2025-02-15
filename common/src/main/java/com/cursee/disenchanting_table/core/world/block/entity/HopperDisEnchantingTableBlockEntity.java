@@ -103,9 +103,6 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
     @Override
     public CompoundTag getUpdateTag() {
         return this.saveWithoutMetadata();
-//        CompoundTag $$0 = new CompoundTag();
-//        ContainerHelper.saveAllItems($$0, this.inventory, true);
-//        return $$0;
     }
 
     private boolean validInput() {
@@ -133,7 +130,7 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
         Player player = this.nearestPlayer(level, pos);
 
         if (player == null) return false;
-        if (player.experienceLevel > 0) return true; // todo fix hard-coded value
+        if (player.experienceLevel > 0 || player.getAbilities().instabuild) return true; // todo fix hard-coded value
 
         return false;
     }
@@ -179,7 +176,7 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
         }
 
         Player player = this.nearestPlayer(level, pos);
-        if (player == null) return; // player is never null here due to preceding nearestPlayerHasEnoughExperience
+        if (player == null || player.getAbilities().instabuild) return; // player is never null here due to preceding nearestPlayerHasEnoughExperience
         player.giveExperienceLevels(-1); // todo fix hard-coded value
     }
 
@@ -256,12 +253,6 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
         }
     }
 
-    // handled by the slots in the menu ?
-    // @Override
-    // public boolean canPlaceItem(int $$0, ItemStack $$1) {
-    //     return super.canPlaceItem($$0, $$1);
-    // }
-
     private static final int[] SLOTS_FOR_UP = new int[]{0}; // input enchanted item from the top
     private static final int[] SLOTS_FOR_SIDES = new int[]{1}; // input normal books from the sides
     private static final int[] SLOTS_FOR_DOWN = new int[]{2}; // output enchanted books from the bottom
@@ -290,6 +281,13 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
 
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-        return slot == 2;
+
+        boolean finishedDisenchanting = false;
+        if (slot == 0) {
+            if (stack.is(Items.ENCHANTED_BOOK) && EnchantedBookItem.getEnchantments(stack).size() < 2) finishedDisenchanting = true;
+            else if (EnchantmentHelper.getEnchantments(stack).isEmpty()) finishedDisenchanting = true;
+        }
+
+        return finishedDisenchanting || slot == 2;
     }
 }
