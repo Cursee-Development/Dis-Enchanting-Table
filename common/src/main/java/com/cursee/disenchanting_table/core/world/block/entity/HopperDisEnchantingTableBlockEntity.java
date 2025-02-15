@@ -1,13 +1,17 @@
 package com.cursee.disenchanting_table.core.world.block.entity;
 
-import com.cursee.disenchanting_table.Constants;
 import com.cursee.disenchanting_table.client.gui.menu.HopperDisEnchantingTableMenu;
 import com.cursee.disenchanting_table.core.registry.ModBlockEntities;
+import com.cursee.disenchanting_table.core.registry.ModMessages;
+import com.cursee.disenchanting_table.platform.Services;
+import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
@@ -53,6 +57,12 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
         return inventory;
     }
 
+    public void setInventory(NonNullList<ItemStack> list) {
+        for(int i = 0; i < list.size(); i++) {
+            this.inventory.set(i, list.get(i));
+        }
+    }
+
     @Override
     public Component getDisplayName() {
         return Component.literal("Hopper Dis-Enchanting Table");
@@ -88,6 +98,14 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
         super.load(data);
         progress = data.getInt("progress");
         ContainerHelper.loadAllItems(data, inventory);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return this.saveWithoutMetadata();
+//        CompoundTag $$0 = new CompoundTag();
+//        ContainerHelper.saveAllItems($$0, this.inventory, true);
+//        return $$0;
     }
 
     private boolean validInput() {
@@ -169,6 +187,11 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
 
         if (level == null) return;
 
+        if (level.getGameTime() % 10 == 0 && this.validInput()) {
+            BlockEntity.setChanged(level, pos, state);
+            setChanged();
+        }
+
         if (this.validInput() && this.outputEmpty() && this.nearestPlayerHasEnoughExperience(level, pos)) {
 
             this.progress += 1;
@@ -176,10 +199,36 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
 
             if (this.progress >= this.maxProgress) {
                 this.disenchant(level, pos);
+                this.setChanged();
                 this.progress = 0;
             }
         }
         else this.progress = 0;
+    }
+
+    public ItemStack getRenderStack() {
+        return this.getItem(0);
+    }
+
+    @Override
+    public void setChanged() {
+        if(level != null && !level.isClientSide()) {
+
+            FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
+
+            data.writeInt(inventory.size());
+            for (ItemStack stack : inventory) {
+                data.writeItem(stack);
+            }
+
+            data.writeBlockPos(getBlockPos());
+
+            for(Player player : level.players()) {
+                if (player instanceof ServerPlayer serverPlayer) Services.PLATFORM.sendToPlayer(serverPlayer, ModMessages.ITEM_SYNC_S2C, data);
+            }
+        }
+
+        super.setChanged();
     }
 
     private class HopperDisenchantingTableData implements ContainerData {
