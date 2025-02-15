@@ -14,6 +14,6 @@ public class HopperDisEnchantingTableScreen extends AbstractContainerScreen<Hopp
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float v, int i, int i1) {
-
+        guiGraphics.blit(DisEnchantingTableScreen.BACKGROUND, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
     }
 }
