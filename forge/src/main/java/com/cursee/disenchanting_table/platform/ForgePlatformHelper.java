@@ -1,9 +1,16 @@
 package com.cursee.disenchanting_table.platform;
 
 import com.cursee.disenchanting_table.platform.services.IPlatformHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
+
+import java.util.function.BiFunction;
 
 public class ForgePlatformHelper implements IPlatformHelper {
 
@@ -29,5 +36,11 @@ public class ForgePlatformHelper implements IPlatformHelper {
     public String getGameDirectory() {
 
         return FMLPaths.GAMEDIR.get().toString();
+    }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityType<T> createBlockEntityType(BiFunction<BlockPos, BlockState, T> func, Block... blocks) {
+
+        return BlockEntityType.Builder.of(func::apply, blocks).build(null);
     }
 }
