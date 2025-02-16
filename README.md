@@ -1,4 +1,4 @@
-# New-Dis-Enchanting-Table
+# Dis-Enchanting-Table
 
 Now we have two blocks, one that operates like a reverse anvil to remove enchantments
 with a GUI, the second block is more like a brewing stand and automatically
