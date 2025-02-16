@@ -23,12 +23,13 @@ public class DisEnchantingTableFabric implements ModInitializer {
 
         CommonConfigFabric.onCommonLoaded();
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
+            if (!(entity instanceof ServerPlayer player)) return;
             FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
             data.writeBoolean(CommonConfigFabric.REQUIRES_EXPERIENCE.get().get());
             data.writeBoolean(CommonConfigFabric.RESET_REPAIR_COST.get().get());
             data.writeBoolean(!CommonConfigFabric.POINTS_OR_LEVELS.get().get().equals("points"));
             data.writeInt(CommonConfigFabric.EXPERIENCE_COST.get().get());
-            if (entity instanceof ServerPlayer player) ServerPlayNetworking.send(player, ModMessages.CONFIG_SYNC_S2C, data);
+            ServerPlayNetworking.send(player, ModMessages.CONFIG_SYNC_S2C, data);
         });
     }
 }
