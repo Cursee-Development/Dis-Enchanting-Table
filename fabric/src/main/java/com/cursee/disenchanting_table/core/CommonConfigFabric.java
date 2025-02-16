@@ -58,10 +58,10 @@ public class CommonConfigFabric {
             POINTS_OR_LEVELS.get().set(toml.getString("points_or_levels"));
             EXPERIENCE_COST.get().set(Math.toIntExact(toml.getLong("experience_cost")));
 
-            CommonConfiguredValues.REQUIRES_EXPERIENCE.set(REQUIRES_EXPERIENCE.get().get());
-            CommonConfiguredValues.RESET_REPAIR_COST.set(RESET_REPAIR_COST.get().get());
-            CommonConfiguredValues.POINTS_OR_LEVELS.set(POINTS_OR_LEVELS.get().get());
-            CommonConfiguredValues.EXPERIENCE_COST.set(EXPERIENCE_COST.get().get());
+            // CommonConfiguredValues.REQUIRES_EXPERIENCE.set(REQUIRES_EXPERIENCE.get().get());
+            // CommonConfiguredValues.RESET_REPAIR_COST.set(RESET_REPAIR_COST.get().get());
+            // CommonConfiguredValues.POINTS_OR_LEVELS.set(POINTS_OR_LEVELS.get().get());
+            // CommonConfiguredValues.EXPERIENCE_COST.set(EXPERIENCE_COST.get().get());
         }
         catch (Exception exception) {}
     }
