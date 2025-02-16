@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -49,7 +50,6 @@ public class HopperDisEnchantingTableBlock extends BaseEntityBlock {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
-
     @Override
     public VoxelShape getShape(BlockState blockState, BlockGetter level, BlockPos blockPos, CollisionContext context) {
         return HopperDisEnchantingTableBlock.SHAPE;
@@ -58,6 +58,11 @@ public class HopperDisEnchantingTableBlock extends BaseEntityBlock {
     @Override
     public RenderShape getRenderShape(BlockState blockState) {
         return RenderShape.MODEL;
+    }
+
+    @Override
+    public boolean isPathfindable(BlockState $$0, BlockGetter $$1, BlockPos $$2, PathComputationType $$3) {
+        return false;
     }
 
     @Override

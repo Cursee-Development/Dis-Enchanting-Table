@@ -228,7 +228,7 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
         super.setChanged();
     }
 
-    private class HopperDisenchantingTableData implements ContainerData {
+    public class HopperDisenchantingTableData implements ContainerData {
 
         @Override
         public int get(int dataIndex) {
@@ -255,7 +255,7 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
 
     private static final int[] SLOTS_FOR_UP = new int[]{0}; // input enchanted item from the top
     private static final int[] SLOTS_FOR_SIDES = new int[]{1}; // input normal books from the sides
-    private static final int[] SLOTS_FOR_DOWN = new int[]{2}; // output enchanted books from the bottom
+    private static final int[] SLOTS_FOR_DOWN = new int[]{0, 2}; // output disenchanted items and enchanted books from the bottom
     @Override
     public int[] getSlotsForFace(Direction side) {
         return side == Direction.UP ? SLOTS_FOR_UP : side == Direction.DOWN ? SLOTS_FOR_DOWN : SLOTS_FOR_SIDES;
@@ -282,12 +282,13 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
     @Override
     public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
 
-        boolean finishedDisenchanting = false;
         if (slot == 0) {
-            if (stack.is(Items.ENCHANTED_BOOK) && EnchantedBookItem.getEnchantments(stack).size() < 2) finishedDisenchanting = true;
-            else if (EnchantmentHelper.getEnchantments(stack).isEmpty()) finishedDisenchanting = true;
+            if (stack.is(Items.ENCHANTED_BOOK) && EnchantedBookItem.getEnchantments(stack).size() < 2) return true;
+            else if (EnchantmentHelper.getEnchantments(stack).isEmpty()) return true;
         }
 
-        return finishedDisenchanting || slot == 2;
+        if (slot == 1) return false;
+
+        return slot == 2;
     }
 }

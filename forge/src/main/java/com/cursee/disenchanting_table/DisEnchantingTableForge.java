@@ -2,11 +2,26 @@ package com.cursee.disenchanting_table;
 
 import com.cursee.disenchanting_table.core.network.ModNetworkForge;
 import com.cursee.disenchanting_table.core.registry.RegistryForge;
+import com.cursee.disenchanting_table.core.world.block.DisEnchantingTableBlock;
+import com.cursee.disenchanting_table.core.world.block.entity.HopperDisEnchantingTableBlockEntity;
 import com.cursee.monolib.core.sailing.Sailing;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullSupplier;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.items.IItemHandler;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 

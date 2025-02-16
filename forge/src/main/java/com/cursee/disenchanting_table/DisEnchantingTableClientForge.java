@@ -21,8 +21,6 @@ public class DisEnchantingTableClientForge {
         public static void onClientSetup(final FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
                 DisEnchantingTableClient.init();
-                // ModNetworkForge.registerS2CPackets();
-                // DisEnchantingTableForge.EVENT_BUS.addListener((Consumer<FMLCommonSetupEvent>) event -> event.enqueueWork(ModNetworkForge::registerS2CPackets));
             });
         }
 
