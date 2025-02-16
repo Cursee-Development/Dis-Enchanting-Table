@@ -1,5 +1,6 @@
 package com.cursee.disenchanting_table.core.world.block;
 
+import com.cursee.disenchanting_table.client.ClientConfiguredValues;
 import com.cursee.disenchanting_table.core.world.inventory.DisEnchantingTableMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -42,6 +43,9 @@ public class DisEnchantingTableBlock extends Block {
 
     @Override
     public void animateTick(BlockState blockState, Level level, BlockPos blockPos, RandomSource randomSource) {
+
+        if (!ClientConfiguredValues.RENDER_ENDER_PARTICLES.get()) return;
+
         for(int i = 0; i < 3; ++i) {
             int j = randomSource.nextInt(2) * 2 - 1;
             int k = randomSource.nextInt(2) * 2 - 1;

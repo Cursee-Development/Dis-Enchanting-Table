@@ -1,5 +1,6 @@
 package com.cursee.disenchanting_table.core.world.inventory;
 
+import com.cursee.disenchanting_table.core.CommonConfiguredValues;
 import com.cursee.disenchanting_table.core.registry.ModBlocks;
 import com.cursee.disenchanting_table.core.registry.ModMenus;
 import net.minecraft.world.entity.player.Inventory;
@@ -23,7 +24,6 @@ public class DisEnchantingTableMenu extends ItemCombinerMenu {
     private @Nullable Integer keptEnchantmentLevel;
     private @Nullable Map<Enchantment, Integer> stolenEnchantments;
     public final DataSlot cost;
-    public final DataSlot costsLevels; // 0 is false
 
     private @Nullable Player player;
     public final DataSlot mayPickup; // 0 is false
@@ -35,10 +35,8 @@ public class DisEnchantingTableMenu extends ItemCombinerMenu {
     public DisEnchantingTableMenu(int containerID, Inventory inventory, ContainerLevelAccess containerAccess) {
         super(ModMenus.DISENCHANTING_MENU, containerID, inventory, containerAccess);
         this.cost = DataSlot.standalone();
-        this.costsLevels = DataSlot.standalone();
         this.mayPickup = DataSlot.standalone();
         this.addDataSlot(this.cost);
-        this.addDataSlot(this.costsLevels);
         this.addDataSlot(this.mayPickup);
         this.player = inventory.player;
     }
@@ -59,7 +57,31 @@ public class DisEnchantingTableMenu extends ItemCombinerMenu {
 
     @Override
     protected boolean mayPickup(Player player, boolean b) {
-        return true;
+
+        int level = player.experienceLevel;
+        int pointsRequired = 0;
+        if (level <= 15) {
+            pointsRequired = 2 * (level + 7);
+        }
+        if (level >= 16 && level <= 30) {
+            pointsRequired = 5 * (level - 38);
+        }
+        if (level >= 31) {
+            pointsRequired = 9 * (level - 158);
+        }
+
+        final float experienceProgress = player.experienceProgress;
+        final int currentExperience = (int) (pointsRequired * experienceProgress);
+
+        boolean creative = player.getAbilities().instabuild;
+        boolean experiencePoints = CommonConfiguredValues.POINTS_OR_LEVELS.get().equals("points") && (player.experienceLevel >= 1 || currentExperience >= this.cost.get());
+        boolean experienceLevels = CommonConfiguredValues.POINTS_OR_LEVELS.get().equals("levels") && player.experienceLevel >= this.cost.get();
+        boolean experience = experiencePoints || experienceLevels;
+        boolean books = this.inputSlots.getItem(1).is(Items.BOOK);
+
+        this.mayPickup.set(((creative || experience) && books) ? 1 : 0);
+
+        return this.mayPickup.get() == 1;
     }
 
     private void takeEnchantedBookResult(Player player, ItemStack inputStack) {
@@ -89,21 +111,20 @@ public class DisEnchantingTableMenu extends ItemCombinerMenu {
         ItemStack inputStack = this.inputSlots.getItem(0);
         if (inputStack.is(Items.ENCHANTED_BOOK)) takeEnchantedBookResult(player, inputStack);
         else takeRegularItemResult(player, inputStack);
-
-        // todo experience cost
-//        if (ConfiguredValues.POINTS_OR_LEVELS.get().equals("points")) {
-//            if (player.totalExperience >= this.cost.get()) player.giveExperiencePoints(-this.cost.get());
-//            else {
-//                player.experienceLevel -= 1;
-//                int newXP = player.getXpNeededForNextLevel();
-//                newXP -= this.cost.get();
-//                player.giveExperiencePoints(newXP);
-//            }
-//        }
-//        else if (ConfiguredValues.POINTS_OR_LEVELS.get().equals("levels")) {
-//            player.giveExperienceLevels(-this.cost.get());
-//        }
-
+        
+        if (CommonConfiguredValues.POINTS_OR_LEVELS.get().equals("points")) {
+            if (player.totalExperience >= this.cost.get()) player.giveExperiencePoints(-this.cost.get());
+            else {
+                player.experienceLevel -= 1;
+                int newXP = player.getXpNeededForNextLevel();
+                newXP -= this.cost.get();
+                player.giveExperiencePoints(newXP);
+            }
+        }
+        else if (CommonConfiguredValues.POINTS_OR_LEVELS.get().equals("levels")) {
+            player.giveExperienceLevels(-this.cost.get());
+        }
+        
         this.cost.set(0);
     }
 
@@ -144,8 +165,7 @@ public class DisEnchantingTableMenu extends ItemCombinerMenu {
             return;
         }
 
-        // todo experience cost
-        // this.cost.set(Math.toIntExact(ConfiguredValues.EXPERIENCE_COST.get()));
+        this.cost.set(CommonConfiguredValues.EXPERIENCE_COST.get());
         if (inputStack.is(Items.ENCHANTED_BOOK)) createEnchantedBookResult();
         else createRegularItemResult();
 
@@ -165,17 +185,16 @@ public class DisEnchantingTableMenu extends ItemCombinerMenu {
             }
 
             int currentExperience = (int) (pointsRequired * experienceProgress);
-
-
+            
             boolean creative = this.player.getAbilities().instabuild;
-//            boolean experiencePoints = ConfiguredValues.POINTS_OR_LEVELS.get().equals("points") && (this.player.experienceLevel >= 1 || currentExperience >= this.cost.get());
-//            boolean experienceLevels = ConfiguredValues.POINTS_OR_LEVELS.get().equals("levels") && this.player.experienceLevel >= this.cost.get();
-//            boolean experience = experiencePoints || experienceLevels;
+            boolean experiencePoints = CommonConfiguredValues.POINTS_OR_LEVELS.get().equals("points") && (this.player.experienceLevel >= 1 || currentExperience >= this.cost.get());
+            boolean experienceLevels = CommonConfiguredValues.POINTS_OR_LEVELS.get().equals("levels") && this.player.experienceLevel >= this.cost.get();
+            boolean experience = experiencePoints || experienceLevels;
             boolean books = this.inputSlots.getItem(1).is(Items.BOOK);
-
-            // this.mayPickup.set(((creative || experience) && books) ? 1 : 0);
-//            if (ConfiguredValues.POINTS_OR_LEVELS.get().equals("points")) this.costsLevels.set(0);
-//            if (ConfiguredValues.POINTS_OR_LEVELS.get().equals("levels")) this.costsLevels.set(1);
+            
+            boolean requiresExperience = CommonConfiguredValues.REQUIRES_EXPERIENCE.get();
+            boolean satisfiesCost = (creative || experience) && books;
+            this.mayPickup.set((!requiresExperience || satisfiesCost) ? 1 : 0);
         }
     }
 }

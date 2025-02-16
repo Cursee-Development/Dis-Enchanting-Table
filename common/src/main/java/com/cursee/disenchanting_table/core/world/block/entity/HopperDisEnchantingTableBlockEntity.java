@@ -1,5 +1,6 @@
 package com.cursee.disenchanting_table.core.world.block.entity;
 
+import com.cursee.disenchanting_table.core.CommonConfiguredValues;
 import com.cursee.disenchanting_table.core.world.inventory.HopperDisEnchantingTableMenu;
 import com.cursee.disenchanting_table.core.registry.ModBlockEntities;
 import com.cursee.disenchanting_table.core.registry.ModMessages;
@@ -167,7 +168,7 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
             this.setItem(2, result);
 
             EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(ItemStack.EMPTY), input);
-            input.setRepairCost(0); // todo make this configurable
+            if (CommonConfiguredValues.RESET_REPAIR_COST.get()) input.setRepairCost(0);
             this.setItem(0, input);
 
             ItemStack bookStack = this.getItem(1);
@@ -177,7 +178,18 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
 
         Player player = this.nearestPlayer(level, pos);
         if (player == null || player.getAbilities().instabuild) return; // player is never null here due to preceding nearestPlayerHasEnoughExperience
-        player.giveExperienceLevels(-1); // todo fix hard-coded value
+        if (CommonConfiguredValues.POINTS_OR_LEVELS.get().equals("points")) {
+            if (player.totalExperience >= CommonConfiguredValues.EXPERIENCE_COST.get()) player.giveExperiencePoints(-CommonConfiguredValues.EXPERIENCE_COST.get());
+            else {
+                player.experienceLevel -= 1;
+                int newXP = player.getXpNeededForNextLevel();
+                newXP -= CommonConfiguredValues.EXPERIENCE_COST.get();
+                player.giveExperiencePoints(newXP);
+            }
+        }
+        else if (CommonConfiguredValues.POINTS_OR_LEVELS.get().equals("levels")) {
+            player.giveExperienceLevels(-CommonConfiguredValues.EXPERIENCE_COST.get());
+        }
     }
 
     public void serverTick(Level level, BlockPos pos, BlockState state) {

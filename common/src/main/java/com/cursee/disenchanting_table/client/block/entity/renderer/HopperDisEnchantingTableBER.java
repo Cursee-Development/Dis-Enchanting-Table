@@ -12,10 +12,12 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 
 public class HopperDisEnchantingTableBER implements BlockEntityRenderer<HopperDisEnchantingTableBlockEntity> {
 
@@ -30,6 +32,8 @@ public class HopperDisEnchantingTableBER implements BlockEntityRenderer<HopperDi
     @Override
     public void render(HopperDisEnchantingTableBlockEntity hopperDisEnchantingTable, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, int packedOverly) {
 
+        // in fabric, if block has facing value east or west, the rendered item appears mirrored
+
         if (hopperDisEnchantingTable.getLevel() == null) return;
 
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
@@ -39,7 +43,10 @@ public class HopperDisEnchantingTableBER implements BlockEntityRenderer<HopperDi
 
         poseStack.translate(0.5f, 0.75f, 0.5f);
         poseStack.scale(0.5f, 0.5f, 0.5f);
-        poseStack.mulPose(Axis.YP.rotationDegrees(hopperDisEnchantingTable.getBlockState().getValue(HopperDisEnchantingTableBlock.FACING).getOpposite().toYRot()));
+
+
+        Direction facing = hopperDisEnchantingTable.getBlockState().getValue(HopperDisEnchantingTableBlock.FACING);
+        poseStack.mulPose(Axis.YP.rotationDegrees(facing != Direction.EAST && facing != Direction.WEST ? facing.getOpposite().toYRot() : facing.toYRot()));
         poseStack.mulPose(Axis.XP.rotationDegrees(90));
         // poseStack.mulPose(Axis.ZP.rotationDegrees(180));
 

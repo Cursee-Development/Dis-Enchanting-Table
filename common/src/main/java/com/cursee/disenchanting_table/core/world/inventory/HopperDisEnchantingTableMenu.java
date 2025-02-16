@@ -1,5 +1,6 @@
 package com.cursee.disenchanting_table.core.world.inventory;
 
+import com.cursee.disenchanting_table.core.CommonConfiguredValues;
 import com.cursee.disenchanting_table.core.registry.ModMenus;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -17,6 +18,9 @@ public class HopperDisEnchantingTableMenu extends AbstractContainerMenu {
     private final Container container;
     private final ContainerData containerData;
 
+    public final DataSlot cost;
+    public final DataSlot mayPickup; // 0 is false
+
     public HopperDisEnchantingTableMenu(int pContainerId, Inventory pPlayerInventory) {
         this(pContainerId, pPlayerInventory, new SimpleContainer(3), new SimpleContainerData(2));
     }
@@ -27,6 +31,12 @@ public class HopperDisEnchantingTableMenu extends AbstractContainerMenu {
         checkContainerDataCount(pContainerData, 2);
         this.container = pContainer;
         this.containerData = pContainerData;
+
+        this.cost = DataSlot.standalone();
+        this.addDataSlot(this.cost);
+        this.mayPickup = DataSlot.standalone();
+        this.addDataSlot(this.mayPickup);
+
         pContainer.startOpen(pPlayerInventory.player);
 
         this.addSlot(new Slot(pContainer, 0, 27, 47) {
@@ -78,11 +88,11 @@ public class HopperDisEnchantingTableMenu extends AbstractContainerMenu {
     }
 
     private void onTake(Player player, ItemStack stack) {
-        // todo: add experience cost here
+        // no-op
     }
 
-    private boolean mayPickup(Player player, boolean hasItem) {
-        // todo: add experience cost here
+    private boolean mayPickup(Player player, boolean b) {
+        // no-op
         return true;
     }
 

@@ -1,5 +1,6 @@
 package com.cursee.disenchanting_table.core.world.block;
 
+import com.cursee.disenchanting_table.client.ClientConfiguredValues;
 import com.cursee.disenchanting_table.core.registry.ModBlockEntities;
 import com.cursee.disenchanting_table.core.world.block.entity.HopperDisEnchantingTableBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -100,6 +101,9 @@ public class HopperDisEnchantingTableBlock extends BaseEntityBlock {
 
     @Override
     public void animateTick(BlockState blockState, Level level, BlockPos blockPos, RandomSource randomSource) {
+
+        if (!ClientConfiguredValues.RENDER_ENDER_PARTICLES.get()) return;
+
         for(int particleCount = 0; particleCount < 3; ++particleCount) {
             int xModifier = randomSource.nextInt(2) * 2 - 1;
             int zModifier = randomSource.nextInt(2) * 2 - 1;
