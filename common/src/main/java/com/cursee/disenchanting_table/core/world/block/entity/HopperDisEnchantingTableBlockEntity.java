@@ -1,6 +1,6 @@
 package com.cursee.disenchanting_table.core.world.block.entity;
 
-import com.cursee.disenchanting_table.client.gui.menu.HopperDisEnchantingTableMenu;
+import com.cursee.disenchanting_table.core.world.inventory.HopperDisEnchantingTableMenu;
 import com.cursee.disenchanting_table.core.registry.ModBlockEntities;
 import com.cursee.disenchanting_table.core.registry.ModMessages;
 import com.cursee.disenchanting_table.platform.Services;

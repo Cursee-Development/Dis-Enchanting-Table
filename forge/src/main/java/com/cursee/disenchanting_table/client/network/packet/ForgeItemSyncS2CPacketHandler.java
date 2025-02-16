@@ -1,19 +1,15 @@
-package com.cursee.disenchanting_table.core.network.packet;
+package com.cursee.disenchanting_table.client.network.packet;
 
-import com.cursee.disenchanting_table.Constants;
+import com.cursee.disenchanting_table.core.network.packet.ForgeItemSyncPacket;
 import com.cursee.disenchanting_table.core.world.block.entity.HopperDisEnchantingTableBlockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class NewForgeItemSyncPacketClientHandler {
-    public static void handleOnClient(NewForgeItemSyncPacket packet, Supplier<NetworkEvent.Context> contextSupplier) {
+public class ForgeItemSyncS2CPacketHandler {
+    public static void handleOnClient(ForgeItemSyncPacket packet, Supplier<NetworkEvent.Context> contextSupplier) {
         contextSupplier.get().enqueueWork(() -> {
 
             Minecraft client = Minecraft.getInstance();

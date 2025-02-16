@@ -6,4 +6,5 @@ import net.minecraft.resources.ResourceLocation;
 public class ModMessages {
 
     public static final ResourceLocation ITEM_SYNC_S2C = DisEnchantingTable.identifier("item_sync");
+    public static final ResourceLocation CONFIG_SYNC_S2C = DisEnchantingTable.identifier("config_sync");
 }

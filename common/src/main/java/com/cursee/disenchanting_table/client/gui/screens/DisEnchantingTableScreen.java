@@ -1,7 +1,7 @@
-package com.cursee.disenchanting_table.client.gui.screen;
+package com.cursee.disenchanting_table.client.gui.screens;
 
 import com.cursee.disenchanting_table.Constants;
-import com.cursee.disenchanting_table.client.gui.menu.DisEnchantingTableMenu;
+import com.cursee.disenchanting_table.core.world.inventory.DisEnchantingTableMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
 import net.minecraft.network.chat.Component;

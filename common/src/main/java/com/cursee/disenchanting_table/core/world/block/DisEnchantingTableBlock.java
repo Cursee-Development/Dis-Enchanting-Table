@@ -1,6 +1,6 @@
 package com.cursee.disenchanting_table.core.world.block;
 
-import com.cursee.disenchanting_table.client.gui.menu.DisEnchantingTableMenu;
+import com.cursee.disenchanting_table.core.world.inventory.DisEnchantingTableMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -11,7 +11,6 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;

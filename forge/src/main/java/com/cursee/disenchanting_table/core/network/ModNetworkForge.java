@@ -2,10 +2,8 @@ package com.cursee.disenchanting_table.core.network;
 
 import com.cursee.disenchanting_table.Constants;
 import com.cursee.disenchanting_table.DisEnchantingTable;
+import com.cursee.disenchanting_table.DisEnchantingTableForge;
 import com.cursee.disenchanting_table.core.network.packet.ForgeItemSyncPacket;
-import com.cursee.disenchanting_table.core.network.packet.NewForgeItemSyncPacket;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -29,6 +27,7 @@ public class ModNetworkForge {
         return packetID = packetID + 1;
     }
     public static void registerS2CPackets() {
-        ModNetworkForge.INSTANCE.registerMessage(createNewPacketID(), NewForgeItemSyncPacket.class, NewForgeItemSyncPacket::encode, NewForgeItemSyncPacket::decode, NewForgeItemSyncPacket::handle);
+        ModNetworkForge.INSTANCE.registerMessage(createNewPacketID(), ForgeItemSyncPacket.class, ForgeItemSyncPacket::encode, ForgeItemSyncPacket::decode, ForgeItemSyncPacket::handle);
+        ModNetworkForge.INSTANCE.registerMessage(createNewPacketID(), DisEnchantingTableForge.SyncPacket.class, DisEnchantingTableForge.SyncPacket::encode, DisEnchantingTableForge.SyncPacket::decode, DisEnchantingTableForge.SyncPacket::handle);
     }
 }

@@ -1,7 +1,7 @@
 package com.cursee.disenchanting_table;
 
-import com.cursee.disenchanting_table.client.gui.screen.DisEnchantingTableScreen;
-import com.cursee.disenchanting_table.client.gui.screen.HopperDisEnchantingTableScreen;
+import com.cursee.disenchanting_table.client.gui.screens.DisEnchantingTableScreen;
+import com.cursee.disenchanting_table.client.gui.screens.HopperDisEnchantingTableScreen;
 import com.cursee.disenchanting_table.core.registry.ModMenus;
 import net.minecraft.client.gui.screens.MenuScreens;
 

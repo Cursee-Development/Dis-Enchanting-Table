@@ -1,6 +1,6 @@
-package com.cursee.disenchanting_table.client.gui.screen;
+package com.cursee.disenchanting_table.client.gui.screens;
 
-import com.cursee.disenchanting_table.client.gui.menu.HopperDisEnchantingTableMenu;
+import com.cursee.disenchanting_table.core.world.inventory.HopperDisEnchantingTableMenu;
 import com.cursee.disenchanting_table.platform.Services;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

@@ -1,4 +1,4 @@
-package com.cursee.disenchanting_table.core.network.packet;
+package com.cursee.disenchanting_table.client.network.packet;
 
 import com.cursee.disenchanting_table.core.world.block.entity.HopperDisEnchantingTableBlockEntity;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -10,7 +10,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public class FabricItemSyncS2CPacket {
+public class FabricItemSyncS2CPacketHandler {
 
     public static void receive(Minecraft client, ClientPacketListener handler, FriendlyByteBuf data, PacketSender responseSender) {
         int size = data.readInt();

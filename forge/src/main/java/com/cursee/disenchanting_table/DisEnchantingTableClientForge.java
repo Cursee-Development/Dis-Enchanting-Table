@@ -1,5 +1,6 @@
 package com.cursee.disenchanting_table;
 
+import com.cursee.disenchanting_table.client.ClientConfigForge;
 import com.cursee.disenchanting_table.client.block.entity.renderer.HopperDisEnchantingTableBER;
 import com.cursee.disenchanting_table.core.network.ModNetworkForge;
 import com.cursee.disenchanting_table.core.registry.ModBlockEntities;
@@ -21,6 +22,7 @@ public class DisEnchantingTableClientForge {
         public static void onClientSetup(final FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
                 DisEnchantingTableClient.init();
+                ClientConfigForge.onClientLoaded();
             });
         }
 

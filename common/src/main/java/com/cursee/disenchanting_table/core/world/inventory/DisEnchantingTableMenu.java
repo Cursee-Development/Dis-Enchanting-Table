@@ -1,4 +1,4 @@
-package com.cursee.disenchanting_table.client.gui.menu;
+package com.cursee.disenchanting_table.core.world.inventory;
 
 import com.cursee.disenchanting_table.core.registry.ModBlocks;
 import com.cursee.disenchanting_table.core.registry.ModMenus;

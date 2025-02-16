@@ -1,8 +1,8 @@
 package com.cursee.disenchanting_table.core.registry;
 
 import com.cursee.disenchanting_table.DisEnchantingTable;
-import com.cursee.disenchanting_table.client.gui.menu.DisEnchantingTableMenu;
-import com.cursee.disenchanting_table.client.gui.menu.HopperDisEnchantingTableMenu;
+import com.cursee.disenchanting_table.core.world.inventory.DisEnchantingTableMenu;
+import com.cursee.disenchanting_table.core.world.inventory.HopperDisEnchantingTableMenu;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;

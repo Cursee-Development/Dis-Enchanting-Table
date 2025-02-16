@@ -1,7 +1,6 @@
-package com.cursee.disenchanting_table.client.gui.menu;
+package com.cursee.disenchanting_table.core.world.inventory;
 
 import com.cursee.disenchanting_table.core.registry.ModMenus;
-import com.cursee.disenchanting_table.core.world.block.entity.HopperDisEnchantingTableBlockEntity;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -11,7 +10,6 @@ import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import org.jetbrains.annotations.Nullable;
 
 /** @see BrewingStandMenu */
 public class HopperDisEnchantingTableMenu extends AbstractContainerMenu {

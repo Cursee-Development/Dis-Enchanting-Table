@@ -1,5 +1,6 @@
 package com.cursee.disenchanting_table;
 
+import com.cursee.disenchanting_table.client.ClientConfigFabric;
 import com.cursee.disenchanting_table.client.block.entity.renderer.HopperDisEnchantingTableBER;
 import com.cursee.disenchanting_table.core.network.ModNetworkFabric;
 import com.cursee.disenchanting_table.core.registry.ModBlockEntities;
@@ -15,5 +16,7 @@ public class DisEnchantingTableClientFabric implements ClientModInitializer {
         DisEnchantingTableClient.init();
         BlockEntityRenderers.register(ModBlockEntities.HOPPER_DISENCHANTING_TABLE, HopperDisEnchantingTableBER::new);
         ModNetworkFabric.registerS2CPackets();
+
+        ClientConfigFabric.onClientLoaded();
     }
 }

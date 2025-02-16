@@ -10,13 +10,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TitleScreen.class)
-public class MixinTitleScreen {
-    
+public class ForgeTitleScreenMixin {
+
     @Inject(at = @At("HEAD"), method = "init()V")
     private void init(CallbackInfo info) {
 
         if (Services.PLATFORM.isDevelopmentEnvironment()) {
-            Constants.LOG.info("This line is printed by an example mod mixin from Fabric!");
+            Constants.LOG.info("This line is printed by an example mod mixin from Forge!");
             Constants.LOG.info("MC Version: {}", Minecraft.getInstance().getVersionType());
         }
     }

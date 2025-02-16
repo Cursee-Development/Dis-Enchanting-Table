@@ -9,4 +9,6 @@ public class DisEnchantingTable {
     public static ResourceLocation identifier(String value) {
         return new ResourceLocation(Constants.MOD_ID, value);
     }
+
+
 }
