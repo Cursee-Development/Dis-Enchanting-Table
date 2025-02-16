@@ -1,1 +1,1 @@
-# New-Dis-Enchanting-Table
+# Dis-Enchanting-Table
