@@ -131,7 +131,7 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
         Player player = this.nearestPlayer(level, pos);
 
         if (player == null) return false;
-        if (player.experienceLevel > 0 || player.getAbilities().instabuild) return true; // todo fix hard-coded value
+        if (!CommonConfiguredValues.REQUIRES_EXPERIENCE.get() || player.experienceLevel > 0 || player.getAbilities().instabuild) return true;
 
         return false;
     }
@@ -177,7 +177,7 @@ public class HopperDisEnchantingTableBlockEntity extends BaseContainerBlockEntit
         }
 
         Player player = this.nearestPlayer(level, pos);
-        if (player == null || player.getAbilities().instabuild) return; // player is never null here due to preceding nearestPlayerHasEnoughExperience
+        if (!CommonConfiguredValues.REQUIRES_EXPERIENCE.get() || player == null || player.getAbilities().instabuild) return; // player is never null here due to preceding nearestPlayerHasEnoughExperience
         if (CommonConfiguredValues.POINTS_OR_LEVELS.get().equals("points")) {
             if (player.totalExperience >= CommonConfiguredValues.EXPERIENCE_COST.get()) player.giveExperiencePoints(-CommonConfiguredValues.EXPERIENCE_COST.get());
             else {

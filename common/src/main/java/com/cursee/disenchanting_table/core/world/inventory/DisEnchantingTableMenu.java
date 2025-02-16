@@ -97,7 +97,7 @@ public class DisEnchantingTableMenu extends ItemCombinerMenu {
 
     private void takeRegularItemResult(Player player, ItemStack inputStack) {
         EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(ItemStack.EMPTY), inputStack);
-        inputStack.setRepairCost(0); // todo add config option
+        if (CommonConfiguredValues.RESET_REPAIR_COST.get()) inputStack.setRepairCost(0);
         this.inputSlots.setItem(0, inputStack);
 
         ItemStack bookStack = this.inputSlots.getItem(1);
