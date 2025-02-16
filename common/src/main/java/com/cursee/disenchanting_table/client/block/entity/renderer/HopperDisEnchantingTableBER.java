@@ -32,25 +32,20 @@ public class HopperDisEnchantingTableBER implements BlockEntityRenderer<HopperDi
     @Override
     public void render(HopperDisEnchantingTableBlockEntity hopperDisEnchantingTable, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, int packedOverly) {
 
-        // in fabric, if block has facing value east or west, the rendered item appears mirrored
-
         if (hopperDisEnchantingTable.getLevel() == null) return;
 
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         ItemStack itemStack = hopperDisEnchantingTable.getRenderStack();
 
         poseStack.pushPose();
-
         poseStack.translate(0.5f, 0.75f, 0.5f);
         poseStack.scale(0.5f, 0.5f, 0.5f);
 
-
+        // if block has facing value east or west, the rendered item appears mirrored
         Direction facing = hopperDisEnchantingTable.getBlockState().getValue(HopperDisEnchantingTableBlock.FACING);
-        poseStack.mulPose(Axis.YP.rotationDegrees(facing != Direction.EAST && facing != Direction.WEST ? facing.getOpposite().toYRot() : facing.toYRot()));
+        poseStack.mulPose(Axis.YP.rotationDegrees((facing != Direction.EAST && facing != Direction.WEST) ? facing.getOpposite().toYRot() : facing.toYRot()));
         poseStack.mulPose(Axis.XP.rotationDegrees(90));
-        // poseStack.mulPose(Axis.ZP.rotationDegrees(180));
 
-        // System.out.println(itemStack.isEmpty());
         itemRenderer.renderStatic(itemStack, ItemDisplayContext.FIXED, getLightLevel(hopperDisEnchantingTable.getLevel(), hopperDisEnchantingTable.getBlockPos()), OverlayTexture.NO_OVERLAY, poseStack, multiBufferSource, hopperDisEnchantingTable.getLevel(), 1);
         poseStack.popPose();
     }
