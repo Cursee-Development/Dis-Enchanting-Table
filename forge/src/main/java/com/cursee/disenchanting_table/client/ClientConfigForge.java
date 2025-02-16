@@ -50,8 +50,8 @@ public class ClientConfigForge {
             EXPERIENCE_INDICATOR.get().set(toml.getBoolean("experience_indicator"));
             RENDER_ENDER_PARTICLES.get().set(toml.getBoolean("render_ender_particles"));
 
-            // ClientConfiguredValues.EXPERIENCE_INDICATOR.set(EXPERIENCE_INDICATOR.get().get());
-            // ClientConfiguredValues.RENDER_ENDER_PARTICLES.set(RENDER_ENDER_PARTICLES.get().get());
+            ClientConfiguredValues.EXPERIENCE_INDICATOR.set(EXPERIENCE_INDICATOR.get().get());
+            ClientConfiguredValues.RENDER_ENDER_PARTICLES.set(RENDER_ENDER_PARTICLES.get().get());
         }
         catch (Exception exception) {}
     }
