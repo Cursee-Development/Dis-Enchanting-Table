@@ -13,6 +13,7 @@ public class RegistryFabric {
 
     public static void register() {
         ModBlocks.register(bind(BuiltInRegistries.BLOCK));
+        FabricBlockEntities.register(bind(BuiltInRegistries.BLOCK_ENTITY_TYPE));
         ModItems.register(boundForItem);
 
         ModMenus.register(bind(BuiltInRegistries.MENU));
