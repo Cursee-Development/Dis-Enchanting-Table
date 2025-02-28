@@ -1,5 +1,7 @@
 package com.cursee.disenchanting_table.core.world.inventory;
 
+import com.cursee.disenchanting_table.Constants;
+import com.cursee.disenchanting_table.core.registry.ModBlocks;
 import com.cursee.disenchanting_table.core.registry.ModMenus;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +20,7 @@ public class ManualDisenchantingMenu extends ItemCombinerMenu {
     }
 
     public ManualDisenchantingMenu(int containerIndex, Inventory playerInventory, ContainerLevelAccess containerLevelAccess) {
-        super(ModMenus.AUTO_DISENCHANTING_TABLE, containerIndex, playerInventory, containerLevelAccess);
+        super(ModMenus.MANUAL_DISENCHANTING_TABLE, containerIndex, playerInventory, containerLevelAccess);
     }
 
     @Override
@@ -33,7 +35,7 @@ public class ManualDisenchantingMenu extends ItemCombinerMenu {
 
     @Override
     protected boolean isValidBlock(BlockState blockState) {
-        return false;
+        return blockState.is(ModBlocks.DISENCHANTING_TABLE);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.cursee.disenchanting_table.platform.services;
 
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -58,4 +60,11 @@ public interface IPlatformHelper {
     BlockEntityType<?> getLoaderDisEnchantingBE();
 
     void doLoaderDisEnchantingTick(Level level, BlockPos pos, BlockState state, BlockEntity blockEntity);
+
+    <M extends AbstractContainerMenu, S extends AbstractContainerScreen<M>> void registerScreen(MenuType<M> menuType, TriFunction<M, Inventory, Component, S> screenConstructor);
+
+    @FunctionalInterface
+    interface TriFunction<P1, P2, P3, R> {
+        R apply(P1 var1, P2 var2, P3 var3);
+    }
 }

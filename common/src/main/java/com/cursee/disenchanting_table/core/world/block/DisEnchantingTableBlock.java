@@ -74,10 +74,7 @@ public class DisEnchantingTableBlock extends Block implements EntityBlock {
     @Override
     public @NotNull InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand interactionHand, BlockHitResult result) {
         if (level.isClientSide) return InteractionResult.SUCCESS;
-        else if (level.getBlockEntity(pos) instanceof MenuProvider menuProvider) {
-            if (CommonConfigValues.automatic_disenchanting) player.openMenu(menuProvider);
-            else player.openMenu(new SimpleMenuProvider((i, inventory, player1) -> new ManualDisenchantingMenu(i, inventory, ContainerLevelAccess.create(level, pos)), Component.translatable("block.disenchanting_table.disenchanting_table")));
-        }
+        else if (level.getBlockEntity(pos) instanceof MenuProvider menuProvider) player.openMenu(menuProvider);
         return InteractionResult.CONSUME;
     }
 

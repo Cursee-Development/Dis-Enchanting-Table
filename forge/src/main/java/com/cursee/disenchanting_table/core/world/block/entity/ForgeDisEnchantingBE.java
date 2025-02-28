@@ -5,6 +5,7 @@ import com.cursee.disenchanting_table.core.registry.ForgeBlockEntities;
 import com.cursee.disenchanting_table.core.util.DisenchantmentHelper;
 import com.cursee.disenchanting_table.core.world.block.DisEnchantingTableBlock;
 import com.cursee.disenchanting_table.core.world.inventory.AutoDisEnchantingMenu;
+import com.cursee.disenchanting_table.core.world.inventory.ManualDisenchantingMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -80,13 +82,18 @@ public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, C
     }
 
     @Override
-    public @Nullable AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return new AutoDisEnchantingMenu(pContainerId, pPlayerInventory, this, this.containerData);
+    public Component getDisplayName() {
+        return Component.translatable("block.disenchanting_table.disenchanting_table");
     }
 
     @Override
-    public Component getDisplayName() {
-        return Component.translatable("block.disenchanting_table.disenchanting_table");
+    public @Nullable AbstractContainerMenu createMenu(int containerIndex, Inventory playerInventory, Player player) {
+
+        if (!CommonConfigValues.automatic_disenchanting) {
+            return new ManualDisenchantingMenu(containerIndex, playerInventory, ContainerLevelAccess.create(level, this.getBlockPos()));
+        }
+
+        return new AutoDisEnchantingMenu(containerIndex, playerInventory, this, containerData);
     }
 
     @Override

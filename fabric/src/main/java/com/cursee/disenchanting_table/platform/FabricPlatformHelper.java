@@ -5,7 +5,10 @@ import com.cursee.disenchanting_table.core.world.block.entity.FabricDisEnchantin
 import com.cursee.disenchanting_table.platform.services.IPlatformHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -66,5 +69,10 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public void doLoaderDisEnchantingTick(Level level, BlockPos pos, BlockState state, BlockEntity blockEntity) {
         if (blockEntity instanceof FabricDisEnchantingBE disEnchantingBE) disEnchantingBE.doTick(level, pos, state, blockEntity);
+    }
+
+    @Override
+    public <M extends AbstractContainerMenu, S extends AbstractContainerScreen<M>> void registerScreen(MenuType<M> menuType, TriFunction<M, Inventory, Component, S> screenConstructor) {
+        MenuScreens.register(menuType, screenConstructor::apply);
     }
 }

@@ -1,17 +1,22 @@
 package com.cursee.disenchanting_table.core.world.block.entity;
 
+import com.cursee.disenchanting_table.Constants;
+import com.cursee.disenchanting_table.core.CommonConfigValues;
 import com.cursee.disenchanting_table.core.registry.FabricBlockEntities;
 import com.cursee.disenchanting_table.core.world.inventory.AutoDisEnchantingMenu;
+import com.cursee.disenchanting_table.core.world.inventory.ManualDisenchantingMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -63,8 +68,15 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
     }
 
     @Override
-    public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-        return new AutoDisEnchantingMenu(i, inventory, this, containerData);
+    public @Nullable AbstractContainerMenu createMenu(int containerIndex, Inventory playerInventory, Player player) {
+
+        Constants.LOG.info("client side? {} auto_disenchant? {}", level.isClientSide(), CommonConfigValues.automatic_disenchanting);
+
+        if (!CommonConfigValues.automatic_disenchanting) {
+            return new ManualDisenchantingMenu(containerIndex, playerInventory, ContainerLevelAccess.create(level, this.getBlockPos()));
+        }
+
+        return new AutoDisEnchantingMenu(containerIndex, playerInventory, this, containerData);
     }
 
     public class DisenchantingTableContainerData implements ContainerData {
