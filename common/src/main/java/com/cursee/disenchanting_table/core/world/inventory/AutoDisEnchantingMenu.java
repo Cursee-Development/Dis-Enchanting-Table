@@ -27,6 +27,8 @@ public class AutoDisEnchantingMenu extends AbstractContainerMenu {
         this.container = container;
         this.containerData = containerData;
 
+        // container.startOpen(playerInventory.player);
+
         this.addSlot(new Slot(container, 0, 27, 47) {
             @Override
             public boolean mayPlace(ItemStack stack) {

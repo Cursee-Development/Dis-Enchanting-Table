@@ -3,12 +3,18 @@ package com.cursee.disenchanting_table.core.world.block.entity;
 import com.cursee.disenchanting_table.Constants;
 import com.cursee.disenchanting_table.core.CommonConfigValues;
 import com.cursee.disenchanting_table.core.registry.FabricBlockEntities;
+import com.cursee.disenchanting_table.core.registry.FabricNetwork;
+import com.cursee.disenchanting_table.core.util.DisenchantmentHelper;
 import com.cursee.disenchanting_table.core.world.inventory.AutoDisEnchantingMenu;
 import com.cursee.disenchanting_table.core.world.inventory.ManualDisenchantingMenu;
+import com.cursee.disenchanting_table.platform.Services;
+import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
@@ -17,12 +23,19 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, IContainer {
 
@@ -41,6 +54,20 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
 
     public void doTick(Level level, BlockPos pos, BlockState state, BlockEntity blockEntity) {
 
+        if (level == null) return;
+
+        boolean validInputs = DisenchantmentHelper.canRemoveEnchantments(this.getItem(0)) && this.getItem(1).is(Items.BOOK);
+        if (validInputs) {
+            this.progress += 1;
+            BlockEntity.setChanged(level, pos, state);
+
+            if (this.progress >= 10) {
+                this.disenchant();
+                this.setChanged();
+                this.progress = 0;
+            }
+        }
+        else this.progress = 0;
     }
 
     @Override
@@ -63,6 +90,28 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
     }
 
     @Override
+    public void setChanged() {
+        if(level != null && !level.isClientSide()) {
+
+            FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
+
+            data.writeInt(inventory.size());
+            for (ItemStack stack : inventory) {
+                data.writeItem(stack);
+            }
+
+            data.writeBlockPos(getBlockPos());
+
+            for(Player player : level.players()) { // todo item sync
+                // if (player instanceof ServerPlayer serverPlayer) Services.PLATFORM.sendToPlayer(serverPlayer, ModMessages.ITEM_SYNC_S2C, data);
+                // if (player instanceof ServerPlayer serverPlayer) FabricNetwork.sendToPlayer(data, serverPlayer, FabricNetwork.Packets.CONFIG_SYNC_S2C);
+            }
+        }
+
+        super.setChanged();
+    }
+
+    @Override
     public Component getDisplayName() {
         return Component.translatable("block.disenchanting_table.disenchanting_table");
     }
@@ -75,6 +124,47 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
         }
 
         return new AutoDisEnchantingMenu(containerIndex, playerInventory, this, containerData);
+    }
+
+    private @Nullable Enchantment keptEnchantment;
+    private @Nullable Integer keptEnchantmentLevel;
+    private @Nullable Map<Enchantment, Integer> stolenEnchantments;
+    private void disenchant() {
+
+        ItemStack input = this.getItem(0);
+
+        if (!input.is(Items.ENCHANTED_BOOK)) {
+            this.stolenEnchantments = EnchantmentHelper.getEnchantments(input);
+            ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
+            EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+            this.setItem(2, result);
+
+            input.setRepairCost(0);
+            EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(ItemStack.EMPTY), input);
+            this.setItem(0, input);
+
+            ItemStack extra = this.getItem(1);
+            extra.shrink(1);
+            this.setItem(1, extra);
+        }
+        else {
+            this.stolenEnchantments = EnchantmentHelper.getEnchantments(input);
+            this.keptEnchantment = this.stolenEnchantments.keySet().iterator().next();
+            this.keptEnchantmentLevel = this.stolenEnchantments.get(this.keptEnchantment);
+            this.stolenEnchantments.remove(this.keptEnchantment);
+
+            ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
+            EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+            this.setItem(2, result);
+
+            if (this.keptEnchantment == null || this.keptEnchantmentLevel == null) return;
+            ItemStack keptEnchantedBook = EnchantedBookItem.createForEnchantment(new EnchantmentInstance(this.keptEnchantment, this.keptEnchantmentLevel));
+            this.setItem(0, keptEnchantedBook);
+
+            ItemStack bookStack = this.getItem(1);
+            bookStack.shrink(1);
+            this.setItem(1, bookStack);
+        }
     }
 
     public class DisenchantingTableContainerData implements ContainerData {
