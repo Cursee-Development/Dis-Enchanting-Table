@@ -59,7 +59,10 @@ public class ManualDisenchantingMenu extends ItemCombinerMenu {
     public void createResult() {
         ItemStack input = inputSlots.getItem(0);
         ItemStack extra = inputSlots.getItem(1);
-        if (!DisenchantmentHelper.canRemoveEnchantments(input) || !extra.is(Items.BOOK)) return;
+        if (!DisenchantmentHelper.canRemoveEnchantments(input) || !extra.is(Items.BOOK)) {
+            resultSlots.setItem(0, ItemStack.EMPTY);
+            return;
+        }
 
         if (!input.is(Items.ENCHANTED_BOOK)) {
             this.keptEnchantment = null;

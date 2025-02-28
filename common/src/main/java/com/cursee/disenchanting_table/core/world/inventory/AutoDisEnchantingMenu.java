@@ -1,6 +1,5 @@
 package com.cursee.disenchanting_table.core.world.inventory;
 
-import com.cursee.disenchanting_table.Constants;
 import com.cursee.disenchanting_table.core.registry.ModMenus;
 import com.cursee.disenchanting_table.core.util.DisenchantmentHelper;
 import net.minecraft.world.Container;
@@ -61,12 +60,37 @@ public class AutoDisEnchantingMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int i) {
-        return ItemStack.EMPTY;
+    public boolean stillValid(Player player) {
+        return true;
     }
 
     @Override
-    public boolean stillValid(Player player) {
-        return true;
+    public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
+
+        ItemStack newStack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(pIndex);
+        if (!slot.hasItem()) return newStack;
+
+        ItemStack originalStack = slot.getItem();
+        newStack = originalStack.copy();
+
+        final boolean itemMovedToPlayer = pIndex < this.container.getContainerSize();
+        if (itemMovedToPlayer) {
+            if (!this.moveItemStackTo(originalStack, this.container.getContainerSize(), this.slots.size(), true)) {
+                return ItemStack.EMPTY;
+            }
+        }
+        else if (!this.moveItemStackTo(originalStack, 0, this.container.getContainerSize(), false)) {
+            return ItemStack.EMPTY;
+        }
+
+        if (originalStack.isEmpty()) {
+            slot.setByPlayer(ItemStack.EMPTY);
+        }
+        else {
+            slot.setChanged();
+        }
+
+        return newStack;
     }
 }
