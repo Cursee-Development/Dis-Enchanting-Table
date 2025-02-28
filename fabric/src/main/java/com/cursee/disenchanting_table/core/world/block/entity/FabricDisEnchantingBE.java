@@ -70,8 +70,6 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int containerIndex, Inventory playerInventory, Player player) {
 
-        Constants.LOG.info("client side? {} auto_disenchant? {}", level.isClientSide(), CommonConfigValues.automatic_disenchanting);
-
         if (!CommonConfigValues.automatic_disenchanting) {
             return new ManualDisenchantingMenu(containerIndex, playerInventory, ContainerLevelAccess.create(level, this.getBlockPos()));
         }

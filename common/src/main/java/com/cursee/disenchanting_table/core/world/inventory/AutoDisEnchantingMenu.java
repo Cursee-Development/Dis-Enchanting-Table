@@ -22,6 +22,8 @@ public class AutoDisEnchantingMenu extends AbstractContainerMenu {
 
     public AutoDisEnchantingMenu(int containerIndex, Inventory playerInventory, Container container, ContainerData containerData) {
         super(ModMenus.AUTO_DISENCHANTING_TABLE, containerIndex);
+        checkContainerSize(container, 3);
+        checkContainerDataCount(containerData, 1);
         this.container = container;
         this.containerData = containerData;
 
