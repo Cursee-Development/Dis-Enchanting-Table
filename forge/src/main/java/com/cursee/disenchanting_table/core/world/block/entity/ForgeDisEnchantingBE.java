@@ -2,6 +2,7 @@ package com.cursee.disenchanting_table.core.world.block.entity;
 
 import com.cursee.disenchanting_table.core.CommonConfigValues;
 import com.cursee.disenchanting_table.core.network.packet.ForgeConfigSyncS2CPacket;
+import com.cursee.disenchanting_table.core.network.packet.ForgeItemSyncS2CPacket;
 import com.cursee.disenchanting_table.core.registry.ForgeBlockEntities;
 import com.cursee.disenchanting_table.core.registry.ForgeNetwork;
 import com.cursee.disenchanting_table.core.util.DisenchantmentHelper;
@@ -12,6 +13,7 @@ import com.cursee.disenchanting_table.platform.Services;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
@@ -28,6 +30,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -109,18 +112,13 @@ public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, C
     public void setChanged() {
         if(level != null && !level.isClientSide()) {
 
-            FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
-
-            data.writeInt(itemHandler.getSlots());
+            NonNullList<ItemStack> inventory = NonNullList.withSize(3, ItemStack.EMPTY);
             for (int i = 0; i < itemHandler.getSlots(); i++) {
-                data.writeItem(itemHandler.getStackInSlot(i));
+                inventory.set(i, itemHandler.getStackInSlot(i));
             }
 
-            data.writeBlockPos(getBlockPos());
-
             for(Player player : level.players()) { // todo item sync
-                // if (player instanceof ServerPlayer serverPlayer) Services.PLATFORM.sendToPlayer(serverPlayer, ModMessages.ITEM_SYNC_S2C, data);
-                // if (player instanceof ServerPlayer serverPlayer) ForgeNetwork.sendToPlayer(new ForgeConfigSyncS2CPacket(), serverPlayer);
+                if (player instanceof ServerPlayer serverPlayer) ForgeNetwork.sendToPlayer(new ForgeItemSyncS2CPacket(inventory, getBlockPos()), serverPlayer);
             }
         }
 
@@ -277,6 +275,12 @@ public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, C
             ItemStack bookStack = this.getItem(1);
             bookStack.shrink(1);
             this.setItem(1, bookStack);
+        }
+    }
+
+    public void setInventory(NonNullList<ItemStack> list) {
+        for(int i = 0; i < list.size(); i++) {
+            this.itemHandler.setStackInSlot(i, list.get(i));
         }
     }
 

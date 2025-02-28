@@ -3,6 +3,7 @@ package com.cursee.disenchanting_table.core.registry;
 import com.cursee.disenchanting_table.Constants;
 import com.cursee.disenchanting_table.DisEnchantingTable;
 import com.cursee.disenchanting_table.core.network.packet.ForgeConfigSyncS2CPacket;
+import com.cursee.disenchanting_table.core.network.packet.ForgeItemSyncS2CPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -29,5 +30,6 @@ public class ForgeNetwork {
 
     public static void registerS2CPackets() {
         ForgeNetwork.INSTANCE.registerMessage(createNewPacketID(), ForgeConfigSyncS2CPacket.class, ForgeConfigSyncS2CPacket::encode, ForgeConfigSyncS2CPacket::decode, ForgeConfigSyncS2CPacket::handle);
+        ForgeNetwork.INSTANCE.registerMessage(createNewPacketID(), ForgeItemSyncS2CPacket.class, ForgeItemSyncS2CPacket::encode, ForgeItemSyncS2CPacket::decode, ForgeItemSyncS2CPacket::handle);
     }
 }

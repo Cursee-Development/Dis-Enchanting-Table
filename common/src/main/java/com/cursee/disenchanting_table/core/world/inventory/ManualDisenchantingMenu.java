@@ -25,6 +25,8 @@ public class ManualDisenchantingMenu extends ItemCombinerMenu {
     private @Nullable Integer keptEnchantmentLevel;
     private @Nullable Map<Enchantment, Integer> stolenEnchantments;
 
+    public final DataSlot mayPickup;
+
     // private final Player player;
 
     public ManualDisenchantingMenu(int containerIndex, Inventory playerInventory) {
@@ -34,6 +36,8 @@ public class ManualDisenchantingMenu extends ItemCombinerMenu {
     public ManualDisenchantingMenu(int containerIndex, Inventory playerInventory, ContainerLevelAccess containerLevelAccess) {
         super(ModMenus.MANUAL_DISENCHANTING_TABLE, containerIndex, playerInventory, containerLevelAccess);
         // player = playerInventory.player;
+        this.mayPickup = DataSlot.standalone();
+        this.addDataSlot(this.mayPickup);
     }
 
     @Override

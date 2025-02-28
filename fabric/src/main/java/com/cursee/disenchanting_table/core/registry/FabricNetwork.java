@@ -10,6 +10,7 @@ public class FabricNetwork {
 
     public static class Packets {
         public static final ResourceLocation CONFIG_SYNC_S2C = DisEnchantingTable.identifier("config_sync");
+        public static final ResourceLocation ITEM_SYNC_S2C = DisEnchantingTable.identifier("item_sync");
 
         public static void registerPacketIDs() {}
     }

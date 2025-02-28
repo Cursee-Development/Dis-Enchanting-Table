@@ -1,13 +1,12 @@
 package com.cursee.disenchanting_table.core.world.block.entity;
 
-import com.cursee.disenchanting_table.Constants;
 import com.cursee.disenchanting_table.core.CommonConfigValues;
+import com.cursee.disenchanting_table.core.network.packet.FabricItemSyncS2CPacket;
 import com.cursee.disenchanting_table.core.registry.FabricBlockEntities;
 import com.cursee.disenchanting_table.core.registry.FabricNetwork;
 import com.cursee.disenchanting_table.core.util.DisenchantmentHelper;
 import com.cursee.disenchanting_table.core.world.inventory.AutoDisEnchantingMenu;
 import com.cursee.disenchanting_table.core.world.inventory.ManualDisenchantingMenu;
-import com.cursee.disenchanting_table.platform.Services;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -17,7 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -75,6 +73,12 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
         return inventory;
     }
 
+    public void setInventory(NonNullList<ItemStack> list) {
+        for(int i = 0; i < list.size(); i++) {
+            this.inventory.set(i, list.get(i));
+        }
+    }
+
     @Override
     protected void saveAdditional(CompoundTag data) {
         ContainerHelper.saveAllItems(data, inventory);
@@ -92,19 +96,8 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
     @Override
     public void setChanged() {
         if(level != null && !level.isClientSide()) {
-
-            FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
-
-            data.writeInt(inventory.size());
-            for (ItemStack stack : inventory) {
-                data.writeItem(stack);
-            }
-
-            data.writeBlockPos(getBlockPos());
-
-            for(Player player : level.players()) { // todo item sync
-                // if (player instanceof ServerPlayer serverPlayer) Services.PLATFORM.sendToPlayer(serverPlayer, ModMessages.ITEM_SYNC_S2C, data);
-                // if (player instanceof ServerPlayer serverPlayer) FabricNetwork.sendToPlayer(data, serverPlayer, FabricNetwork.Packets.CONFIG_SYNC_S2C);
+            for(Player player : level.players()) {
+                if (player instanceof ServerPlayer serverPlayer) FabricItemSyncS2CPacket.registerS2CPacketSender(serverPlayer, inventory, getBlockPos());
             }
         }
 
