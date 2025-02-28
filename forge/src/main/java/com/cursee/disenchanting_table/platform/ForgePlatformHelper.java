@@ -1,5 +1,6 @@
 package com.cursee.disenchanting_table.platform;
 
+import com.cursee.disenchanting_table.core.registry.ForgeBlockEntities;
 import com.cursee.disenchanting_table.core.world.block.entity.ForgeDisEnchantingBE;
 import com.cursee.disenchanting_table.platform.services.IPlatformHelper;
 import net.minecraft.core.BlockPos;
@@ -7,7 +8,9 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -55,5 +58,15 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public @Nullable BlockEntity createLoaderDisEnchantingBE(BlockPos pos, BlockState state) {
         return new ForgeDisEnchantingBE(pos, state);
+    }
+
+    @Override
+    public BlockEntityType<?> getLoaderDisEnchantingBE() {
+        return ForgeBlockEntities.DISENCHANTING_TABLE;
+    }
+
+    @Override
+    public void doLoaderDisEnchantingTick(Level level, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+        if (blockEntity instanceof ForgeDisEnchantingBE disEnchantingBE) disEnchantingBE.doTick(level, pos, state, blockEntity);
     }
 }

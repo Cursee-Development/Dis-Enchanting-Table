@@ -1,5 +1,6 @@
 package com.cursee.disenchanting_table.platform;
 
+import com.cursee.disenchanting_table.core.registry.FabricBlockEntities;
 import com.cursee.disenchanting_table.core.world.block.entity.FabricDisEnchantingBE;
 import com.cursee.disenchanting_table.platform.services.IPlatformHelper;
 import net.fabricmc.api.EnvType;
@@ -9,7 +10,9 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,5 +56,15 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public @Nullable BlockEntity createLoaderDisEnchantingBE(BlockPos pos, BlockState state) {
         return new FabricDisEnchantingBE(pos, state);
+    }
+
+    @Override
+    public BlockEntityType<?> getLoaderDisEnchantingBE() {
+        return FabricBlockEntities.DISENCHANTING_TABLE;
+    }
+
+    @Override
+    public void doLoaderDisEnchantingTick(Level level, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+        if (blockEntity instanceof FabricDisEnchantingBE disEnchantingBE) disEnchantingBE.doTick(level, pos, state, blockEntity);
     }
 }
