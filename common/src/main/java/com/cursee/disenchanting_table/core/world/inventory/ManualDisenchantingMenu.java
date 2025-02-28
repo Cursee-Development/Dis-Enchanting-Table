@@ -43,6 +43,10 @@ public class ManualDisenchantingMenu extends ItemCombinerMenu {
 
     @Override
     protected ItemCombinerMenuSlotDefinition createInputSlotDefinitions() {
-        return null;
+        return ItemCombinerMenuSlotDefinition.create()
+                .withSlot(0, 27, 47, (stack) -> true)
+                .withSlot(1, 76, 47, (stack) -> true)
+                .withResultSlot(2, 134, 47)
+                .build();
     }
 }

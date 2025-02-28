@@ -25,7 +25,7 @@ public class AutoDisEnchantingMenu extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player player, int i) {
-        return null;
+        return ItemStack.EMPTY;
     }
 
     @Override
