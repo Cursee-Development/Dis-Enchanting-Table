@@ -92,7 +92,7 @@ public class DisEnchantingTableBlock extends Block implements EntityBlock {
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide() ? null : createTickerHelper(type, Services.PLATFORM.getLoaderDisEnchantingBE(), Services.PLATFORM::doLoaderDisEnchantingTick);
+        return level.isClientSide() || !CommonConfigValues.automatic_disenchanting ? null : createTickerHelper(type, Services.PLATFORM.getLoaderDisEnchantingBE(), Services.PLATFORM::doLoaderDisEnchantingTick);
     }
 
     @Override
