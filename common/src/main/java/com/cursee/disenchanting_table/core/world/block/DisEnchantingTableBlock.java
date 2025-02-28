@@ -83,8 +83,7 @@ public class DisEnchantingTableBlock extends Block implements EntityBlock {
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return null;
-        // Services.PLATFORM.createLoaderDisenchantingTableBE(pos, state);
+        return Services.PLATFORM.createLoaderDisEnchantingBE(pos, state);
     }
 
     private @Nullable static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> serverType, BlockEntityType<E> clientType, BlockEntityTicker<? super E> ticker) {

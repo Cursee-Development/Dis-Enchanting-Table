@@ -1,9 +1,13 @@
 package com.cursee.disenchanting_table.platform.services;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
 
@@ -46,4 +50,6 @@ public interface IPlatformHelper {
     boolean isClientSide();
 
     <T extends AbstractContainerMenu> MenuType<T> registerMenu(BiFunction<Integer, Inventory, T> menuConstructor, FeatureFlagSet flagSet);
+
+    @Nullable BlockEntity createLoaderDisEnchantingBE(BlockPos pos, BlockState state);
 }
