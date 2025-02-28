@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -55,12 +56,12 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
         if (level == null) return;
 
         boolean validInputs = DisenchantmentHelper.canRemoveEnchantments(this.getItem(0)) && this.getItem(1).is(Items.BOOK);
-        if (validInputs) {
+        if (validInputs && getItem(2).isEmpty() && this.nearestPlayerHasEnoughExperience(level, pos)) {
             this.progress += 1;
             BlockEntity.setChanged(level, pos, state);
 
             if (this.progress >= 10) {
-                this.disenchant();
+                this.disenchant(level, pos);
                 this.setChanged();
                 this.progress = 0;
             }
@@ -122,7 +123,7 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
     private @Nullable Enchantment keptEnchantment;
     private @Nullable Integer keptEnchantmentLevel;
     private @Nullable Map<Enchantment, Integer> stolenEnchantments;
-    private void disenchant() {
+    private void disenchant(Level level, BlockPos pos) {
 
         ItemStack input = this.getItem(0);
 
@@ -158,10 +159,39 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
             bookStack.shrink(1);
             this.setItem(1, bookStack);
         }
+
+        Player player = this.nearestPlayer(level, pos);
+        if (!CommonConfigValues.requires_experience || player == null || player.getAbilities().instabuild) return; // player is never null here due to preceding nearestPlayerHasEnoughExperience
+        if (CommonConfigValues.uses_points) {
+            if (player.totalExperience >= CommonConfigValues.experience_cost) player.giveExperiencePoints(-CommonConfigValues.experience_cost);
+            else {
+                player.experienceLevel -= 1;
+                int newXP = player.getXpNeededForNextLevel();
+                newXP -= CommonConfigValues.experience_cost;
+                player.giveExperiencePoints(newXP);
+            }
+        }
+        else {
+            player.giveExperienceLevels(-CommonConfigValues.experience_cost);
+        }
     }
 
     public ItemStack getRenderStack() {
         return !getItem(2).isEmpty() ? getItem(2) : getItem(0);
+    }
+
+    private @Nullable Player nearestPlayer(Level level, BlockPos pos) {
+        return level.getNearestPlayer(TargetingConditions.forNonCombat(), pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    private boolean nearestPlayerHasEnoughExperience(Level level, BlockPos pos) {
+
+        Player player = this.nearestPlayer(level, pos);
+
+        if (player == null) return false;
+        if (!CommonConfigValues.requires_experience || player.experienceLevel > 0 || player.getAbilities().instabuild) return true;
+
+        return false;
     }
 
     public class DisenchantingTableContainerData implements ContainerData {
