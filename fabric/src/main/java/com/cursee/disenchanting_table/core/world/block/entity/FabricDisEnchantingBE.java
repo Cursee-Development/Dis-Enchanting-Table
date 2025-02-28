@@ -160,6 +160,10 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
         }
     }
 
+    public ItemStack getRenderStack() {
+        return !getItem(2).isEmpty() ? getItem(2) : getItem(0);
+    }
+
     public class DisenchantingTableContainerData implements ContainerData {
 
         @Override
