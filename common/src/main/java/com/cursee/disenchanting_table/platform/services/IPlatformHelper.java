@@ -1,5 +1,12 @@
 package com.cursee.disenchanting_table.platform.services;
 
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+
+import java.util.function.BiFunction;
+
 public interface IPlatformHelper {
 
     /**
@@ -37,4 +44,6 @@ public interface IPlatformHelper {
     String getGameDirectory();
 
     boolean isClientSide();
+
+    <T extends AbstractContainerMenu> MenuType<T> registerMenu(BiFunction<Integer, Inventory, T> menuConstructor, FeatureFlagSet flagSet);
 }

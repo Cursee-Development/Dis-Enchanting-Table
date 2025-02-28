@@ -1,14 +1,19 @@
 package com.cursee.disenchanting_table.core.world.block;
 
+import com.cursee.disenchanting_table.core.CommonConfigValues;
+import com.cursee.disenchanting_table.core.world.inventory.ManualDisenchantingMenu;
 import com.cursee.disenchanting_table.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -69,13 +74,16 @@ public class DisEnchantingTableBlock extends Block implements EntityBlock {
     @Override
     public @NotNull InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand interactionHand, BlockHitResult result) {
         if (level.isClientSide) return InteractionResult.SUCCESS;
-        else if (level.getBlockEntity(pos) instanceof MenuProvider menuProvider) player.openMenu(menuProvider);
+        else if (level.getBlockEntity(pos) instanceof MenuProvider menuProvider) {
+            if (CommonConfigValues.automatic_disenchanting) player.openMenu(menuProvider);
+            else player.openMenu(new SimpleMenuProvider((i, inventory, player1) -> new ManualDisenchantingMenu(i, inventory, ContainerLevelAccess.create(level, pos)), Component.translatable("block.disenchanting_table.disenchanting_table")));
+        }
         return InteractionResult.CONSUME;
     }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return null; // todo finish newBlockEntity
+        return null;
         // Services.PLATFORM.createLoaderDisenchantingTableBE(pos, state);
     }
 

@@ -14,6 +14,8 @@ public class RegistryFabric {
     public static void register() {
         ModBlocks.register(bind(BuiltInRegistries.BLOCK));
         ModItems.register(boundForItem);
+
+        ModMenus.register(bind(BuiltInRegistries.MENU));
     }
 
     private static <T> BiConsumer<T, ResourceLocation> bind(Registry<? super T> registry) {
