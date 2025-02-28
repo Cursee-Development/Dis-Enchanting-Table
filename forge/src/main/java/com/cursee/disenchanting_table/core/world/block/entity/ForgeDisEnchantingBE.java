@@ -37,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, Container {
+
     private ItemStackHandler itemHandler = new DisenchantingTableItemStackHandler();
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private final Map<Direction, LazyOptional<WrappedHandler>> directionWrappedHandlerMap =
