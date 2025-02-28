@@ -20,6 +20,10 @@ public class FabricConfigSyncS2CPacket {
         if (!(entity instanceof ServerPlayer player)) return;
         FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
         data.writeBoolean(CommonConfigValues.automatic_disenchanting);
+        data.writeBoolean(CommonConfigValues.resets_repair_cost);
+        data.writeBoolean(CommonConfigValues.requires_experience);
+        data.writeBoolean(CommonConfigValues.uses_points);
+        data.writeInt(CommonConfigValues.experience_cost);
         FabricNetwork.sendToPlayer(data, player, FabricNetwork.Packets.CONFIG_SYNC_S2C);
     }
 }

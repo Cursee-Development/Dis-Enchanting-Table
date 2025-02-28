@@ -10,5 +10,9 @@ public class FabricConfigSyncClientHandler {
 
     public static void registerS2CPacketHandler(Minecraft client, ClientPacketListener handler, FriendlyByteBuf data, PacketSender responseSender) {
         CommonConfigValues.automatic_disenchanting = data.readBoolean();
+        CommonConfigValues.resets_repair_cost = data.readBoolean();
+        CommonConfigValues.requires_experience = data.readBoolean();
+        CommonConfigValues.uses_points = data.readBoolean();
+        CommonConfigValues.experience_cost = data.readInt();
     }
 }

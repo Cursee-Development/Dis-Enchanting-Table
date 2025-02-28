@@ -37,7 +37,7 @@ public class DisEnchantingTableForge {
 
         MinecraftForge.EVENT_BUS.addListener((Consumer<EntityJoinLevelEvent>) event -> {
             if (!(event.getEntity() instanceof ServerPlayer player)) return;
-            ForgeNetwork.sendToPlayer(new ForgeConfigSyncS2CPacket(CommonConfigValues.automatic_disenchanting), player);
+            ForgeNetwork.sendToPlayer(new ForgeConfigSyncS2CPacket(CommonConfigValues.automatic_disenchanting, CommonConfigValues.resets_repair_cost, CommonConfigValues.requires_experience, CommonConfigValues.uses_points, CommonConfigValues.experience_cost), player);
         });
     }
 }
