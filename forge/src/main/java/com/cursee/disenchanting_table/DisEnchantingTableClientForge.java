@@ -1,5 +1,6 @@
 package com.cursee.disenchanting_table;
 
+import com.cursee.disenchanting_table.client.ForgeClientConfigHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -14,6 +15,7 @@ public class DisEnchantingTableClientForge {
         public static void onClientSetup(final FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
                 DisEnchantingTableClient.init();
+                ForgeClientConfigHandler.onLoad();
             });
         }
     }

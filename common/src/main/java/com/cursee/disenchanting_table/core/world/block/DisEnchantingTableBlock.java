@@ -1,5 +1,6 @@
 package com.cursee.disenchanting_table.core.world.block;
 
+import com.cursee.disenchanting_table.client.ClientConfigValues;
 import com.cursee.disenchanting_table.core.CommonConfigValues;
 import com.cursee.disenchanting_table.platform.Services;
 import net.minecraft.core.BlockPos;
@@ -91,7 +92,7 @@ public class DisEnchantingTableBlock extends Block implements EntityBlock {
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
 
-        // todo create client config option to disable animateTick
+        if (!ClientConfigValues.render_ender_particles) return;
 
         for(int i = 0; i < 3; ++i) {
             int xMod = random.nextInt(2) * 2 - 1;
