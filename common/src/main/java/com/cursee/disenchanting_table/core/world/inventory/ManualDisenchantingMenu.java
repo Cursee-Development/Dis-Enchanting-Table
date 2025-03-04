@@ -144,7 +144,8 @@ public class ManualDisenchantingMenu extends ItemCombinerMenu {
 
             boolean requiresExperience = CommonConfigValues.requires_experience;
             boolean satisfiesCost = (creative || experience) && books;
-            this.mayPickup.set((!requiresExperience || satisfiesCost) ? 1 : 0);
+            // this.mayPickup.set((!requiresExperience || satisfiesCost) ? 1 : 0);
+            this.mayPickup.set(!resultSlots.isEmpty() && requiresExperience && !satisfiesCost ? 1 : 0);
         }
     }
 

@@ -29,22 +29,21 @@ public class ManualDisEnchantingScreen extends ItemCombinerScreen<ManualDisencha
         super.renderBg(guiGraphics, partialTick, mouseX, mouseY);
 
         boolean mayPickupResult = this.menu.mayPickup.get() == 1;
-
-        if (this.menu.getSlot(0).hasItem() && !mayPickupResult) {
-            guiGraphics.blit(BACKGROUND, this.leftPos + 99 + 3, this.topPos + 45, this.imageWidth, 0, 28, 21);
-        }
-
         if (!ClientConfigValues.experience_indicator || mayPickupResult) return;
 
         Minecraft instance = Minecraft.getInstance();
         if (instance.player == null || instance.player.getAbilities().instabuild) return;
 
-        final int textColor = 0xFFFF6060;
+        if (this.menu.mayPickup.get() == 1) {
+            guiGraphics.blit(BACKGROUND, this.leftPos + 99 + 3, this.topPos + 45, this.imageWidth, 0, 28, 21);
+        }
+
+        final int textPadding = 4;
         final int xStart = this.leftPos + 45;
         final int yStart = this.topPos + 72;
         Component text = Component.literal("Insufficient Experience!");
-        guiGraphics.fill(xStart, yStart, xStart + this.font.width(text) + 4, yStart + 11, 0xFF45327F);
-        guiGraphics.drawString(this.font, text, xStart + 2, yStart + 2, textColor);
+        guiGraphics.fill(xStart, yStart, xStart + this.font.width(text) + textPadding, yStart + 11, 0xFF45327F);
+        guiGraphics.drawString(this.font, text, xStart + (textPadding / 2), yStart + (textPadding / 2), 0xFFFF6060);
     }
 
     @Override
