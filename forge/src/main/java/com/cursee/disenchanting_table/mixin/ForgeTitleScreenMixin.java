@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(TitleScreen.class)
 public class ForgeTitleScreenMixin {
 
-    @Inject(at = @At("HEAD"), method = "init()V")
+    @Inject(at = @At("HEAD"), method = "init")
     private void init(CallbackInfo info) {
 
         if (Services.PLATFORM.isDevelopmentEnvironment()) {
