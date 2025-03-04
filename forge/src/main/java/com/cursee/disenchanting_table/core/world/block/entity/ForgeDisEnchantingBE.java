@@ -24,6 +24,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -52,7 +53,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, Container {
+public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, WorldlyContainer {
 
     private ItemStackHandler itemHandler = new DisenchantingTableItemStackHandler();
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
@@ -318,6 +319,21 @@ public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, C
         return false;
     }
 
+    @Override
+    public int @NotNull [] getSlotsForFace(@NotNull Direction side) {
+        return side == Direction.DOWN ? new int[]{2} : new int[]{0, 1};
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
+        return CommonConfigValues.automatic_disenchanting && (side != Direction.DOWN && canPlaceItem(slot, stack));
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int slot, ItemStack pStack, Direction side) {
+        return CommonConfigValues.automatic_disenchanting && (side == Direction.DOWN && slot == 2);
+    }
+
     public class DisenchantingTableContainerData implements ContainerData {
 
         @Override
@@ -354,8 +370,8 @@ public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, C
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
-                case 0 -> DisenchantmentHelper.canRemoveEnchantments(stack);
-                case 1 -> stack.is(Items.BOOK);
+                case 0 -> CommonConfigValues.automatic_disenchanting && DisenchantmentHelper.canRemoveEnchantments(stack);
+                case 1 -> CommonConfigValues.automatic_disenchanting && stack.is(Items.BOOK);
                 default -> false;
             };
         }

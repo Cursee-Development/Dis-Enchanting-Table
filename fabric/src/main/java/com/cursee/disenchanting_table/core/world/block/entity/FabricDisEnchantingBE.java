@@ -9,11 +9,13 @@ import com.cursee.disenchanting_table.core.world.inventory.AutoDisEnchantingMenu
 import com.cursee.disenchanting_table.core.world.inventory.ManualDisenchantingMenu;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -192,6 +194,32 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
         if (!CommonConfigValues.requires_experience || player.experienceLevel > 0 || player.getAbilities().instabuild) return true;
 
         return false;
+    }
+
+    @Override
+    public void setRemoved() {
+
+        super.setRemoved();
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
+        return CommonConfigValues.automatic_disenchanting && (side != Direction.DOWN && canPlaceItem(slot, stack));
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
+        return CommonConfigValues.automatic_disenchanting && (side == Direction.DOWN && slot == 2);
+    }
+
+    @Override
+    public boolean canPlaceItem(int index, ItemStack stack) {
+        return (index == 0 && DisenchantmentHelper.canRemoveEnchantments(stack)) || (index == 1 && stack.is(Items.BOOK));
+    }
+
+    @Override
+    public boolean canTakeItem(Container target, int index, ItemStack stack) {
+        return index == 2;
     }
 
     public class DisenchantingTableContainerData implements ContainerData {

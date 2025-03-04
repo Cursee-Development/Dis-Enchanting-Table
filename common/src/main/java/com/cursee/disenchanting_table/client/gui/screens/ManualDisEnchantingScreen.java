@@ -3,13 +3,16 @@ package com.cursee.disenchanting_table.client.gui.screens;
 import com.cursee.disenchanting_table.Constants;
 import com.cursee.disenchanting_table.client.ClientConfigValues;
 import com.cursee.disenchanting_table.core.CommonConfigValues;
+import com.cursee.disenchanting_table.core.util.ExperienceHelper;
 import com.cursee.disenchanting_table.core.world.inventory.ManualDisenchantingMenu;
+import com.cursee.disenchanting_table.platform.Services;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 
 public class ManualDisEnchantingScreen extends ItemCombinerScreen<ManualDisenchantingMenu> {
 
@@ -28,15 +31,25 @@ public class ManualDisEnchantingScreen extends ItemCombinerScreen<ManualDisencha
 
         super.renderBg(guiGraphics, partialTick, mouseX, mouseY);
 
-        boolean mayPickupResult = this.menu.mayPickup.get() == 1;
-        if (!ClientConfigValues.experience_indicator || mayPickupResult) return;
+        if (!this.menu.hasResult()) return;
 
         Minecraft instance = Minecraft.getInstance();
-        if (instance.player == null || instance.player.getAbilities().instabuild) return;
+        if (instance.player == null) return;
+        Player player = instance.player;
 
-        if (this.menu.mayPickup.get() == 1) {
-            guiGraphics.blit(BACKGROUND, this.leftPos + 99 + 3, this.topPos + 45, this.imageWidth, 0, 28, 21);
-        }
+        // assume the player cannot pickup the item
+        boolean mayPickupResult = false;
+
+        // if the cost is in points, and the player has more than or equal to the cost, they can pickup the item
+        if (CommonConfigValues.uses_points && ExperienceHelper.totalPointsFromLevelAndProgress(player.experienceLevel, player.experienceProgress) >= CommonConfigValues.experience_cost) mayPickupResult = true;
+
+        // if the cost is in levels, and the player has more than or equal to the cost, they can pickup the item
+        else if (!CommonConfigValues.uses_points && player.experienceLevel >= CommonConfigValues.experience_cost) mayPickupResult = true;
+
+        // if the player can pickup the result, we don't draw the "insufficient experience" text or it's background
+        if (mayPickupResult || player.getAbilities().instabuild) return;
+
+        guiGraphics.blit(BACKGROUND, this.leftPos + 99 + 3, this.topPos + 45, this.imageWidth, 0, 28, 21);
 
         final int textPadding = 4;
         final int xStart = this.leftPos + 45;
