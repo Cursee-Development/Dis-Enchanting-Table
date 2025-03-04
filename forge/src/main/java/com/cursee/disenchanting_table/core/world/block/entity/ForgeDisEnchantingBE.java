@@ -106,7 +106,7 @@ public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, W
     @Override
     public void load(CompoundTag data) {
         super.load(data);
-        itemHandler.deserializeNBT(data.getCompound("inventory"));
+        if (CommonConfigValues.automatic_disenchanting) itemHandler.deserializeNBT(data.getCompound("inventory"));
         this.progress = data.getInt("progress");
     }
 
@@ -119,7 +119,7 @@ public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, W
                 inventory.set(i, itemHandler.getStackInSlot(i));
             }
 
-            for(Player player : level.players()) { // todo item sync
+            for(Player player : level.players()) {
                 if (player instanceof ServerPlayer serverPlayer) ForgeNetwork.sendToPlayer(new ForgeItemSyncS2CPacket(inventory, getBlockPos()), serverPlayer);
             }
         }
