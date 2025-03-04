@@ -20,6 +20,7 @@ public class RegistryForge {
         bind(Registries.BLOCK, ModBlocks::register);
         bind(Registries.BLOCK_ENTITY_TYPE, ForgeBlockEntities::register);
         bindForItems(ModItems::register);
+        bind(Registries.CREATIVE_MODE_TAB, ModTabs::register);
 
         bind(Registries.MENU, ModMenus::register);
     }

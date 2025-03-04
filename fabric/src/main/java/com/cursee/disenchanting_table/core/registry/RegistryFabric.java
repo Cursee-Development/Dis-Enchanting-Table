@@ -15,6 +15,7 @@ public class RegistryFabric {
         ModBlocks.register(bind(BuiltInRegistries.BLOCK));
         FabricBlockEntities.register(bind(BuiltInRegistries.BLOCK_ENTITY_TYPE));
         ModItems.register(boundForItem);
+        ModTabs.register(bind(BuiltInRegistries.CREATIVE_MODE_TAB));
 
         ModMenus.register(bind(BuiltInRegistries.MENU));
     }
