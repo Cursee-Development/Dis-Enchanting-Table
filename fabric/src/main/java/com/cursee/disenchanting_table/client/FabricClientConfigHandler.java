@@ -21,7 +21,10 @@ public class FabricClientConfigHandler {
             "# setting this to \"false\" will stop particles from rendering around the disenchanting table",
 
             "experience_indicator = true",
-            "# setting this to \"false\" will cause the \"Insufficient Experience\" text to not display"
+            "# setting this to \"false\" will cause the \"Insufficient Experience\" text to not display",
+
+            "render_table_item = true",
+            "# setting this to \" false\" will stop input/output items from displaying on the block"
     };
 
     private static void handleConfig(File file) {
@@ -40,6 +43,7 @@ public class FabricClientConfigHandler {
             Toml toml = new Toml().read(file);
             ClientConfigValues.render_ender_particles = toml.getBoolean("render_ender_particles");
             ClientConfigValues.experience_indicator = toml.getBoolean("experience_indicator");
+            ClientConfigValues.render_table_item = toml.getBoolean("render_table_item");
         }
         catch (Exception ignored) {}
     }

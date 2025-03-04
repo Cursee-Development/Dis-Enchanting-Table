@@ -18,7 +18,8 @@ public class FabricCommonConfigHandler {
 
     private static final String[] DEFAULT_CONFIG = new String[] {
             "automatic_disenchanting = false",
-            "# setting this to \"true\" will cause the disenchanting table to operate automatically, taking experience from the nearest player and enabling",
+            "# setting this to \"true\" will cause the disenchanting table to operate automatically, taking experience from the nearest player and",
+            "# enabling it to work with hoppers",
 
             "resets_repair_cost = true",
             "# setting this to \"false\" will stop the disenchanting table from resetting the anvil cost",
