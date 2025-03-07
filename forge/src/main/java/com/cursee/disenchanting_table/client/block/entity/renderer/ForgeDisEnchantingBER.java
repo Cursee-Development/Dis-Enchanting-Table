@@ -41,7 +41,7 @@ public class ForgeDisEnchantingBER implements BlockEntityRenderer<ForgeDisEnchan
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         ItemStack itemStack = disEnchantingBE.getRenderStack();
         if (!CommonConfigValues.automatic_disenchanting) itemStack = MANUAL_STACK;
-        if (ClientConfigValues.render_table_item) return;
+        if (!ClientConfigValues.render_table_item) return;
 
         poseStack.pushPose();
         poseStack.translate(0.5f, 0.75f, 0.5f);
