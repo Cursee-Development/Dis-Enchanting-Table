@@ -17,10 +17,12 @@ import java.util.function.Consumer;
 public class RegistryForge {
 
     public static void register(IEventBus modEventBus) {
-        bind(Registries.BLOCK, consumer -> {
-            ModBlocks.register(consumer);
-        });
+        bind(Registries.BLOCK, ModBlocks::register);
+        bind(Registries.BLOCK_ENTITY_TYPE, ForgeBlockEntities::register);
         bindForItems(ModItems::register);
+        bind(Registries.CREATIVE_MODE_TAB, ModTabs::register);
+
+        bind(Registries.MENU, ModMenus::register);
     }
 
     private static <T> void bind(ResourceKey<Registry<T>> registry, Consumer<BiConsumer<T, ResourceLocation>> source) {
