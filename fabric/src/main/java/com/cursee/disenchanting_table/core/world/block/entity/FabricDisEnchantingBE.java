@@ -8,9 +8,8 @@ import com.cursee.disenchanting_table.core.util.DisenchantmentHelper;
 import com.cursee.disenchanting_table.core.world.inventory.AutoDisEnchantingMenu;
 import com.cursee.disenchanting_table.core.world.inventory.ManualDisenchantingMenu;
 import io.netty.buffer.Unpooled;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.*;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -30,6 +29,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -82,18 +82,32 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
         }
     }
 
+//    @Override
+//    protected void saveAdditional(CompoundTag data) {
+//        ContainerHelper.saveAllItems(data, inventory);
+//        data.putInt("progress", this.progress);
+//        super.saveAdditional(data);
+//    }
+//
+//    @Override
+//    public void load(CompoundTag data) {
+//        super.load(data);
+//        ContainerHelper.loadAllItems(data, inventory);
+//        this.progress = data.getInt("progress");
+//    }
+
     @Override
-    protected void saveAdditional(CompoundTag data) {
-        ContainerHelper.saveAllItems(data, inventory);
-        data.putInt("progress", this.progress);
-        super.saveAdditional(data);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        ContainerHelper.saveAllItems(tag, inventory, registries);
+        tag.putInt("progress", this.progress);
+        super.saveAdditional(tag, registries);
     }
 
     @Override
-    public void load(CompoundTag data) {
-        super.load(data);
-        ContainerHelper.loadAllItems(data, inventory);
-        this.progress = data.getInt("progress");
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        ContainerHelper.loadAllItems(tag, inventory, registries);
+        this.progress = tag.getInt("progress");
     }
 
     @Override
@@ -122,21 +136,21 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
         return new AutoDisEnchantingMenu(containerIndex, playerInventory, this, containerData);
     }
 
-    private @Nullable Enchantment keptEnchantment;
-    private @Nullable Integer keptEnchantmentLevel;
-    private @Nullable Map<Enchantment, Integer> stolenEnchantments;
+    private @Nullable Holder<Enchantment> keptEnchantment;
+    private int keptEnchantmentLevel;
+    private ItemEnchantments stolenEnchantments = ItemEnchantments.EMPTY;
     private void disenchant(Level level, BlockPos pos) {
 
         ItemStack input = this.getItem(0);
 
         if (!input.is(Items.ENCHANTED_BOOK)) {
-            this.stolenEnchantments = EnchantmentHelper.getEnchantments(input);
+            this.stolenEnchantments = EnchantmentHelper.getEnchantmentsForCrafting(input);
             ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
-            EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+            EnchantmentHelper.setEnchantments(result, this.stolenEnchantments);
             this.setItem(2, result);
 
-            input.setRepairCost(0);
-            EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(ItemStack.EMPTY), input);
+            if (CommonConfigValues.resets_repair_cost) input.set(DataComponents.REPAIR_COST, 0);
+            EnchantmentHelper.setEnchantments(input, EnchantmentHelper.getEnchantmentsForCrafting(ItemStack.EMPTY));
             this.setItem(0, input);
 
             ItemStack extra = this.getItem(1);
@@ -144,16 +158,20 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
             this.setItem(1, extra);
         }
         else {
-            this.stolenEnchantments = EnchantmentHelper.getEnchantments(input);
+            this.stolenEnchantments = EnchantmentHelper.getEnchantmentsForCrafting(input);
             this.keptEnchantment = this.stolenEnchantments.keySet().iterator().next();
-            this.keptEnchantmentLevel = this.stolenEnchantments.get(this.keptEnchantment);
-            this.stolenEnchantments.remove(this.keptEnchantment);
+            this.keptEnchantmentLevel = this.stolenEnchantments.getLevel(this.keptEnchantment);
+
+            // this.stolenEnchantments.remove(this.keptEnchantment);
+            ItemEnchantments.Mutable mutableEnchantments = new ItemEnchantments.Mutable(this.stolenEnchantments);
+            mutableEnchantments.removeIf(enchantmentHolder -> enchantmentHolder.value() == this.keptEnchantment.value());
+            this.stolenEnchantments = mutableEnchantments.toImmutable();
 
             ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
-            EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+            EnchantmentHelper.setEnchantments(result, this.stolenEnchantments);
             this.setItem(2, result);
 
-            if (this.keptEnchantment == null || this.keptEnchantmentLevel == null) return;
+            if (this.keptEnchantment == null || this.keptEnchantmentLevel == 0) return;
             ItemStack keptEnchantedBook = EnchantedBookItem.createForEnchantment(new EnchantmentInstance(this.keptEnchantment, this.keptEnchantmentLevel));
             this.setItem(0, keptEnchantedBook);
 

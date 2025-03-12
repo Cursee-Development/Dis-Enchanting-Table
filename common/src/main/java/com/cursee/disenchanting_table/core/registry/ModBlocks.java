@@ -12,7 +12,7 @@ import java.util.function.BiConsumer;
 
 public class ModBlocks {
 
-    public static final Block DISENCHANTING_TABLE = new DisEnchantingTableBlock(BlockBehaviour.Properties.copy(Blocks.ENCHANTING_TABLE));
+    public static final Block DISENCHANTING_TABLE = new DisEnchantingTableBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.ENCHANTING_TABLE));
 
     public static void register(BiConsumer<Block, ResourceLocation> consumer) {
         consumer.accept(DISENCHANTING_TABLE, DisEnchantingTable.identifier(Constants.MOD_ID));

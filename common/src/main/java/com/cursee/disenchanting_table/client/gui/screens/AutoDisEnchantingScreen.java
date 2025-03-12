@@ -1,6 +1,7 @@
-package com.cursee.disenchanting_table.core.client.gui.screens;
+package com.cursee.disenchanting_table.client.gui.screens;
 
 import com.cursee.disenchanting_table.Constants;
+import com.cursee.disenchanting_table.DisEnchantingTable;
 import com.cursee.disenchanting_table.core.world.inventory.AutoDisEnchantingMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -11,7 +12,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class AutoDisEnchantingScreen extends AbstractContainerScreen<AutoDisEnchantingMenu> {
 
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(Constants.MOD_ID, "textures/gui/container/disenchanting_table.png");
+    public static final ResourceLocation BACKGROUND = DisEnchantingTable.identifier("textures/gui/container/disenchanting_table.png");
 
     public AutoDisEnchantingScreen(AutoDisEnchantingMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);

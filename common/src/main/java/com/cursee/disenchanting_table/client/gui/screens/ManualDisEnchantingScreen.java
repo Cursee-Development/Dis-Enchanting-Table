@@ -1,6 +1,7 @@
-package com.cursee.disenchanting_table.core.client.gui.screens;
+package com.cursee.disenchanting_table.client.gui.screens;
 
 import com.cursee.disenchanting_table.Constants;
+import com.cursee.disenchanting_table.DisEnchantingTable;
 import com.cursee.disenchanting_table.client.ClientConfigValues;
 import com.cursee.disenchanting_table.core.CommonConfigValues;
 import com.cursee.disenchanting_table.core.util.ExperienceHelper;
@@ -16,7 +17,7 @@ import net.minecraft.world.entity.player.Player;
 
 public class ManualDisEnchantingScreen extends ItemCombinerScreen<ManualDisenchantingMenu> {
 
-    public static final ResourceLocation BACKGROUND = new ResourceLocation(Constants.MOD_ID, "textures/gui/container/disenchanting_table.png");
+    public static final ResourceLocation BACKGROUND = DisEnchantingTable.identifier("textures/gui/container/disenchanting_table.png");
 
     public ManualDisEnchantingScreen(ManualDisenchantingMenu $$0, Inventory $$1, Component $$2) {
         super($$0, $$1, $$2, BACKGROUND);

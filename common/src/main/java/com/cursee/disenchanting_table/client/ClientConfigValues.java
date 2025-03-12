@@ -1,4 +1,4 @@
-package com.cursee.disenchanting_table.core.client;
+package com.cursee.disenchanting_table.client;
 
 public class ClientConfigValues {
 

@@ -6,6 +6,8 @@ import com.cursee.disenchanting_table.core.registry.ModBlocks;
 import com.cursee.disenchanting_table.core.registry.ModMenus;
 import com.cursee.disenchanting_table.core.util.DisenchantmentHelper;
 import com.cursee.disenchanting_table.core.util.ExperienceHelper;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,9 +29,9 @@ import java.util.function.Predicate;
 
 public class ManualDisenchantingMenu extends ItemCombinerMenu {
 
-    private @Nullable Enchantment keptEnchantment;
-    private @Nullable Integer keptEnchantmentLevel;
-    private @Nullable Map<Enchantment, Integer> stolenEnchantments;
+    private @Nullable Holder<Enchantment> keptEnchantment;
+    private int keptEnchantmentLevel = 0;
+    private ItemEnchantments stolenEnchantments = ItemEnchantments.EMPTY;
 
     public int cost = 0;
     public final DataSlot mayPickup;
@@ -90,21 +93,36 @@ public class ManualDisenchantingMenu extends ItemCombinerMenu {
 
         if (!input.is(Items.ENCHANTED_BOOK)) {
             this.keptEnchantment = null;
-            this.keptEnchantmentLevel = null;
-            this.stolenEnchantments = EnchantmentHelper.getEnchantments(input);
+            this.keptEnchantmentLevel = 0;
+
+            // this.stolenEnchantments = EnchantmentHelper.getEnchantments(input);
+            this.stolenEnchantments = EnchantmentHelper.getEnchantmentsForCrafting(input);
 
             ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
-            EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+
+            // EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+            EnchantmentHelper.setEnchantments(result, this.stolenEnchantments);
             resultSlots.setItem(0, result);
         }
         else {
-            this.stolenEnchantments = EnchantmentHelper.getEnchantments(input);
+            // this.stolenEnchantments = EnchantmentHelper.getEnchantments(input);
+            this.stolenEnchantments = EnchantmentHelper.getEnchantmentsForCrafting(input);
+
+            // this.keptEnchantment = stolenEnchantments.keySet().iterator().next();
             this.keptEnchantment = stolenEnchantments.keySet().iterator().next();
-            this.keptEnchantmentLevel = stolenEnchantments.get(this.keptEnchantment);
-            this.stolenEnchantments.remove(this.keptEnchantment);
+
+            // this.keptEnchantmentLevel = stolenEnchantments.get(this.keptEnchantment);
+            this.keptEnchantmentLevel = stolenEnchantments.getLevel(this.keptEnchantment);
+
+            // this.stolenEnchantments.remove(this.keptEnchantment);
+            ItemEnchantments.Mutable mutableEnchantments = new ItemEnchantments.Mutable(this.stolenEnchantments);
+            mutableEnchantments.removeIf(enchantmentHolder -> enchantmentHolder.value() == this.keptEnchantment.value());
+            this.stolenEnchantments = mutableEnchantments.toImmutable();
 
             ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
-            EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+
+            // EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+            EnchantmentHelper.setEnchantments(result, this.stolenEnchantments);
             this.resultSlots.setItem(0, result);
         }
 
@@ -134,12 +152,13 @@ public class ManualDisenchantingMenu extends ItemCombinerMenu {
         ItemStack extra = inputSlots.getItem(1);
 
         if (!input.is(Items.ENCHANTED_BOOK)) {
-            if (CommonConfigValues.resets_repair_cost) input.setRepairCost(0);
-            EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(ItemStack.EMPTY), input);
+            // if (CommonConfigValues.resets_repair_cost) input.setRepairCost(0);
+            if (CommonConfigValues.resets_repair_cost) input.set(DataComponents.REPAIR_COST, 0);
+            EnchantmentHelper.setEnchantments(input, EnchantmentHelper.getEnchantmentsForCrafting(ItemStack.EMPTY));
             inputSlots.setItem(0, input);
         }
         else {
-            if (this.keptEnchantment == null || this.keptEnchantmentLevel == null) return;
+            if (this.keptEnchantment == null || this.keptEnchantmentLevel == 0) return;
             inputSlots.setItem(0, EnchantedBookItem.createForEnchantment(new EnchantmentInstance(this.keptEnchantment, this.keptEnchantmentLevel)));
         }
 
@@ -147,7 +166,7 @@ public class ManualDisenchantingMenu extends ItemCombinerMenu {
         inputSlots.setItem(1, extra);
 
         this.keptEnchantment = null;
-        this.keptEnchantmentLevel = null;
+        this.keptEnchantmentLevel = 0;
         this.stolenEnchantments = null;
 
         if (CommonConfigValues.uses_points) player.giveExperiencePoints(-CommonConfigValues.experience_cost);
