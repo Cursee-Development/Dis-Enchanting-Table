@@ -11,9 +11,8 @@ import com.cursee.disenchanting_table.core.world.inventory.AutoDisEnchantingMenu
 import com.cursee.disenchanting_table.core.world.inventory.ManualDisenchantingMenu;
 import com.cursee.disenchanting_table.platform.Services;
 import io.netty.buffer.Unpooled;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.*;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
@@ -38,6 +37,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -96,17 +96,33 @@ public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, W
         else this.progress = 0;
     }
 
-    @Override
-    protected void saveAdditional(CompoundTag data) {
-        data.put("inventory", itemHandler.serializeNBT());
-        data.putInt("progress", this.progress);
-        super.saveAdditional(data);
-    }
+//    @Override
+//    protected void saveAdditional(CompoundTag data) {
+//        data.put("inventory", itemHandler.serializeNBT());
+//        data.putInt("progress", this.progress);
+//        super.saveAdditional(data);
+//    }
+
 
     @Override
-    public void load(CompoundTag data) {
-        super.load(data);
-        if (CommonConfigValues.automatic_disenchanting) itemHandler.deserializeNBT(data.getCompound("inventory"));
+    protected void saveAdditional(CompoundTag data, HolderLookup.Provider pRegistries) {
+        data.put("inventory", itemHandler.serializeNBT(pRegistries));
+        data.putInt("progress", this.progress);
+        super.saveAdditional(data, pRegistries);
+    }
+
+//    @Override
+//    public void load(CompoundTag data) {
+//        super.load(data);
+//        if (CommonConfigValues.automatic_disenchanting) itemHandler.deserializeNBT(data.getCompound("inventory"));
+//        this.progress = data.getInt("progress");
+//    }
+
+
+    @Override
+    protected void loadAdditional(CompoundTag data, HolderLookup.Provider pRegistries) {
+        super.loadAdditional(data, pRegistries);
+        if (CommonConfigValues.automatic_disenchanting) itemHandler.deserializeNBT(pRegistries, data.getCompound("inventory"));
         this.progress = data.getInt("progress");
     }
 
@@ -120,7 +136,7 @@ public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, W
             }
 
             for(Player player : level.players()) {
-                if (player instanceof ServerPlayer serverPlayer) ForgeNetwork.sendToPlayer(new ForgeItemSyncS2CPacket(inventory, getBlockPos()), serverPlayer);
+                if (player instanceof ServerPlayer serverPlayer) ForgeNetwork.sendToPlayer(new ForgeItemSyncS2CPacket(getBlockPos(), inventory.size(), inventory), serverPlayer);
             }
         }
 
@@ -147,14 +163,26 @@ public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, W
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
-    public @NotNull CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
-    }
+//    @Override
+//    public @NotNull CompoundTag getUpdateTag() {
+//        return saveWithoutMetadata();
+//    }
+
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        super.onDataPacket(net, pkt);
+    public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
+        return saveWithoutMetadata(pRegistries);
+    }
+
+//    @Override
+//    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+//        super.onDataPacket(net, pkt);
+//    }
+
+
+    @Override
+    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookup) {
+        super.onDataPacket(connection, pkt, lookup);
     }
 
     @Override
@@ -239,21 +267,24 @@ public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, W
         return super.getCapability(cap, side);
     }
 
-    private @Nullable Enchantment keptEnchantment;
+    private @Nullable Holder<Enchantment> keptEnchantment;
     private @Nullable Integer keptEnchantmentLevel;
-    private @Nullable Map<Enchantment, Integer> stolenEnchantments;
+    private @Nullable ItemEnchantments stolenEnchantments = ItemEnchantments.EMPTY;
     private void disenchant(Level level, BlockPos pos) {
 
         ItemStack input = this.getItem(0);
 
         if (!input.is(Items.ENCHANTED_BOOK)) {
-            this.stolenEnchantments = EnchantmentHelper.getEnchantments(input);
+            this.stolenEnchantments = EnchantmentHelper.getEnchantmentsForCrafting(input);//EnchantmentHelper.getEnchantments(input);
             ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
-            EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+            // EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+            EnchantmentHelper.setEnchantments(result, this.stolenEnchantments);
             this.setItem(2, result);
 
-            input.setRepairCost(0);
-            EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(ItemStack.EMPTY), input);
+            // input.setRepairCost(0);
+            if (CommonConfigValues.resets_repair_cost) input.set(DataComponents.REPAIR_COST, 0);
+            // EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(ItemStack.EMPTY), input);
+            EnchantmentHelper.setEnchantments(input, ItemEnchantments.EMPTY);
             this.setItem(0, input);
 
             ItemStack extra = this.getItem(1);
@@ -261,13 +292,18 @@ public class ForgeDisEnchantingBE extends BlockEntity implements MenuProvider, W
             this.setItem(1, extra);
         }
         else {
-            this.stolenEnchantments = EnchantmentHelper.getEnchantments(input);
-            this.keptEnchantment = this.stolenEnchantments.keySet().iterator().next();
-            this.keptEnchantmentLevel = this.stolenEnchantments.get(this.keptEnchantment);
-            this.stolenEnchantments.remove(this.keptEnchantment);
+            this.stolenEnchantments = EnchantmentHelper.getEnchantmentsForCrafting(input);
+            this.keptEnchantment = this.stolenEnchantments.keySet().stream().findFirst().get();
+            this.keptEnchantmentLevel = this.stolenEnchantments.getLevel(this.keptEnchantment);
+
+            // this.stolenEnchantments.remove(this.keptEnchantment);
+            ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(this.stolenEnchantments);
+            mutable.removeIf(enchantmentHolder -> enchantmentHolder.value() == this.keptEnchantment.value());
+            this.stolenEnchantments = mutable.toImmutable();
 
             ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
-            EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+            // EnchantmentHelper.setEnchantments(this.stolenEnchantments, result);
+            EnchantmentHelper.setEnchantments(result, this.stolenEnchantments);
             this.setItem(2, result);
 
             if (this.keptEnchantment == null || this.keptEnchantmentLevel == null) return;

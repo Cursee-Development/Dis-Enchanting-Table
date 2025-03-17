@@ -30,7 +30,7 @@ public class DisEnchantingTableForge {
         EVENT_BUS.addListener((Consumer<FMLCommonSetupEvent>) event -> {
             event.enqueueWork(() -> {
                 ForgeCommonConfigHandler.onLoad();
-                ForgeNetwork.registerS2CPackets();
+                ForgeNetwork.register();
             });
         });
 

@@ -8,6 +8,7 @@ import com.cursee.disenchanting_table.core.util.DisenchantmentHelper;
 import com.cursee.disenchanting_table.core.world.inventory.AutoDisEnchantingMenu;
 import com.cursee.disenchanting_table.core.world.inventory.ManualDisenchantingMenu;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.*;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -112,11 +113,19 @@ public class FabricDisEnchantingBE extends BlockEntity implements MenuProvider, 
 
     @Override
     public void setChanged() {
-        if(level != null && !level.isClientSide()) {
-            for(Player player : level.players()) {
-                if (player instanceof ServerPlayer serverPlayer) FabricItemSyncS2CPacket.registerS2CPacketSender(serverPlayer, inventory, getBlockPos());
+//        if(level != null && !level.isClientSide()) {
+//            for(Player player : level.players()) {
+//                if (player instanceof ServerPlayer serverPlayer) FabricItemSyncS2CPacket.registerS2CPacketSender(serverPlayer, inventory, getBlockPos());
+//            }
+//        }
+
+        if (level != null && !level.isClientSide()) {
+            for (Player player : level.players()) {
+                if (player instanceof ServerPlayer serverPlayer) ServerPlayNetworking.send(serverPlayer, new FabricItemSyncS2CPacket(this.getBlockPos(), this.inventory.size(), this.inventory));
             }
         }
+
+        // ServerPlayNetworking.send(player, new FabricItemSyncS2CPacket());
 
         super.setChanged();
     }
