@@ -1,10 +1,15 @@
 package com.cursee.disenchanting_table.platform;
 
+import com.cursee.disenchanting_table.core.registry.FabricBlockEntities;
+import com.cursee.disenchanting_table.core.world.block.entity.FabricDisEnchantingBE;
 import com.cursee.disenchanting_table.platform.services.IPlatformHelper;
 import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.block.v1.FabricBlock;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -49,27 +54,27 @@ public class FabricPlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public <T extends AbstractContainerMenu> MenuType<T> registerMenu(BiFunction<Integer, Inventory, T> menuConstructor, FeatureFlagSet flagSet) {
-        return null;
+    public <T extends AbstractContainerMenu> MenuType<T> registerMenu(MenuType.MenuSupplier<T> menuConstructor, FeatureFlagSet flagSet) {
+        return new MenuType<>(menuConstructor, flagSet);
     }
 
     @Override
     public @Nullable BlockEntity createLoaderDisEnchantingBE(BlockPos pos, BlockState state) {
-        return null;
+        return new FabricDisEnchantingBE(pos, state);
     }
 
     @Override
     public BlockEntityType<?> getLoaderDisEnchantingBE() {
-        return null;
+        return FabricBlockEntities.DISENCHANTING_TABLE;
     }
 
     @Override
     public void doLoaderDisEnchantingTick(Level level, BlockPos pos, BlockState state, BlockEntity blockEntity) {
-
+        if (blockEntity instanceof FabricDisEnchantingBE disenchantingTable) disenchantingTable.doTick(level, pos, state, blockEntity);
     }
 
     @Override
     public <M extends AbstractContainerMenu, S extends AbstractContainerScreen<M>> void registerScreen(MenuType<M> menuType, TriFunction<M, Inventory, Component, S> screenConstructor) {
-
+        MenuScreens.register(menuType, screenConstructor::apply);
     }
 }

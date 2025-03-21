@@ -53,7 +53,7 @@ public interface IPlatformHelper {
 
     boolean isClientSide();
 
-    <T extends AbstractContainerMenu> MenuType<T> registerMenu(BiFunction<Integer, Inventory, T> menuConstructor, FeatureFlagSet flagSet);
+    <T extends AbstractContainerMenu> MenuType<T> registerMenu(MenuType.MenuSupplier<T> menuConstructor, FeatureFlagSet flagSet);
 
     @Nullable BlockEntity createLoaderDisEnchantingBE(BlockPos pos, BlockState state);
 

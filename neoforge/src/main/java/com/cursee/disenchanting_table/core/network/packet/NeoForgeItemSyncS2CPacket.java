@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 public record NeoForgeItemSyncS2CPacket(long blockPos, int size, Holder<Item> displayItem) implements CustomPacketPayload {
 
     public static final Type<NeoForgeItemSyncS2CPacket> TYPE =
-            new Type<>(DisEnchantingTable.identifier("config_sync"));
+            new Type<>(DisEnchantingTable.identifier("item_sync"));
     public static final StreamCodec<RegistryFriendlyByteBuf, NeoForgeItemSyncS2CPacket> REGISTRY_STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_LONG, NeoForgeItemSyncS2CPacket::blockPos,
             ByteBufCodecs.VAR_INT, NeoForgeItemSyncS2CPacket::size,
