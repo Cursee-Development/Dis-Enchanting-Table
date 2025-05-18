@@ -14,20 +14,13 @@ legacyForge {
     }
 }
 
-// project:common/lib folder
-repositories {
-    flatDir {
-        dirs "lib"
-    }
-}
-
 dependencies {
     compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
     // build the latest version of monolib yourself from https://www.github.com/Cursee-Development/Mono-Lib-Redux (future: https://www.github.com/Cursee-Development/Mono-Lib)
     // you can optionally mimic this in the loader-specific build files to use the jars you've built instead of pulling from CurseMaven or Modrinth
-    implementation project(':common').files('lib/monolib-common-1.20.1-2.1.0.jar')
+    api project(':common').files('lib/monolib-common-1.20.1-2.1.0.jar') // compileOnly and implementation "work" but don't exactly fit our usage
 }
 
 configurations {
