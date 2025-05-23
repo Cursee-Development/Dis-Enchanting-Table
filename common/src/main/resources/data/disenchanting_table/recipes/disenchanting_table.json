@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:obsidian"
+    },
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "pattern": [
+    " L ",
+    "D#D",
+    "###"
+  ],
+  "result": {
+    "item": "disenchanting_table:disenchanting_table"
+  },
+  "show_notification": true
+}

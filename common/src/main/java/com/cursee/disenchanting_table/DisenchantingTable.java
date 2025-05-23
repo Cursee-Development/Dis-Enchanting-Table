@@ -1,5 +1,7 @@
 package com.cursee.disenchanting_table;
 
+import com.cursee.disenchanting_table.core.CommonConfig;
+import com.cursee.disenchanting_table.platform.Services;
 import com.cursee.monolib.core.sailing.Sailing;
 import net.minecraft.resources.ResourceLocation;
 

@@ -19,7 +19,7 @@
           "com.cursee.disenchanting_table.DisenchantingTableFabric"
         ],
         "client": [
-            "com.cursee.disenchanting_table.DisenchantingTableClientFabric"
+          "com.cursee.disenchanting_table.DisenchantingTableClientFabric"
         ]
     },
     "mixins": [
