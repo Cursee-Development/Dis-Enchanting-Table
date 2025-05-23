@@ -36,18 +36,11 @@ public class DisenchantingTableRenderer implements BlockEntityRenderer<Disenchan
 
     @Override
     public void render(DisenchantingTableBlockEntity table, float v, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, int packedOverlay) {
-        if (!ClientConfig.render_table_item) {
-            System.out.println("returned earlier due to config");
-            return;
-        }
-        if (table.getLevel() == null) {
-            System.out.println("returned early as level was null");
-            return;
-        }
+        if (!ClientConfig.render_table_item) return;
+        if (table.getLevel() == null) return;
 
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         ItemStack itemStack = table.getRenderStack();
-        System.out.println(itemStack.isEmpty());
         if (!ServerConfig.automatic_disenchanting) itemStack = MANUAL_STACK;
 
         poseStack.pushPose();

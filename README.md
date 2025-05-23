@@ -56,3 +56,12 @@ The Dis-Enchanting Table works in **manual** or **automatic** mode depending on 
 - `requires_experience` (`boolean: true`) — Should disenchanting consume player experience?
 - `uses_points` (`boolean: true`) — Use XP points instead of levels for cost calculations?
 - `experience_cost` (`int: 25`) — How much experience is required to disenchant?
+
+<!--
+Useful testing commands:
+/experience add @p 200 levels
+/give @p book 64
+/give @p netherite_sword{Enchantments:[{id:fire_aspect,lvl:1},{id:mending,lvl:1}]} 5
+/give @p enchanted_book{StoredEnchantments:[{id:fire_aspect,lvl:1},{id:mending,lvl:1}]} 5
+
+-->

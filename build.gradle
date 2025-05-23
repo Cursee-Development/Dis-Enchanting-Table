@@ -9,7 +9,7 @@ plugins {
 forgix {
     group = "${project.group}"
     mergedJarName = "${mod_id}-merged-${minecraft_version}-${project.version}.jar"
-    outputDir = "python/libs"
+    outputDir = "build/libs"
 
     custom {
         projectName = "common"

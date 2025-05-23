@@ -1,6 +1,6 @@
 package com.cursee.disenchanting_table.client;
 
-import com.cursee.monolib.Constants;
+import com.cursee.disenchanting_table.Constants;
 import com.cursee.monolib.platform.Services;
 import com.cursee.monolib.util.toml.Toml;
 
