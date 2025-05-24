@@ -14,7 +14,7 @@ public class ClientConfig {
     public static boolean render_experience_cost = true;
     public static boolean render_table_item = true;
 
-    private static final String FILE_SUFFIX = Constants.MOD_ID + "-client";
+    private static final String FILE_SUFFIXED = Constants.MOD_ID + "-client";
     private static final String CONFIG_DIR_FILEPATH = Services.PLATFORM.getGameDirectory() + File.separator + "config";
 
     public static void onLoad() {
@@ -24,7 +24,7 @@ public class ClientConfig {
             throw new RuntimeException("Unable to access or create directory: " + CONFIG_DIR_FILEPATH);
         }
 
-        handle(new File(CONFIG_DIR_FILEPATH + File.separator + FILE_SUFFIX + ".toml"));
+        handle(new File(CONFIG_DIR_FILEPATH + File.separator + FILE_SUFFIXED + ".toml"));
     }
 
     private static final LinkedList<String> DEFAULTS = new LinkedList<>();
@@ -42,8 +42,41 @@ public class ClientConfig {
         }
         else {
             Toml toml = new Toml().read(file);
-            render_block_particles = toml.getBoolean("render_block_particles");
-            render_experience_cost = toml.getBoolean("render_experience_cost");
+
+            // handle deprecated config
+            if (toml.getBoolean("render_block_particles") == null) {
+                Constants.LOG.info("Failed to read key \"render_block_particles\" from {}", file.getName());
+                Constants.LOG.info("Attempting to read deprecated key \"render_ender_particles\" from {}", file.getName());
+
+                if (toml.getBoolean("render_ender_particles") == null) {
+                    Constants.LOG.info("Failed to read deprecated key \"render_ender_particles\" from {}", file.getName());
+                    Constants.LOG.info("Setting client config value \"render_block_particles\" to default: true");
+                }
+                else {
+                    render_block_particles = true;
+                }
+            }
+            else {
+                render_block_particles = toml.getBoolean("render_block_particles");
+            }
+
+            // handle deprecated config
+            if (toml.getBoolean("render_experience_cost") == null) {
+                Constants.LOG.info("Failed to read key \"render_experience_cost\" from {}", file.getName());
+                Constants.LOG.info("Attempting to read deprecated key \"experience_indicator\" from {}", file.getName());
+
+                if (toml.getBoolean("experience_indicator") == null) {
+                    Constants.LOG.info("Failed to read deprecated key \"experience_indicator\" from {}", file.getName());
+                    Constants.LOG.info("Setting client config value \"render_experience_cost\" to default: true");
+                }
+                else {
+                    render_experience_cost = true;
+                }
+            }
+            else {
+                render_experience_cost = toml.getBoolean("render_experience_cost");
+            }
+
             render_table_item = toml.getBoolean("render_table_item");
         }
     }
