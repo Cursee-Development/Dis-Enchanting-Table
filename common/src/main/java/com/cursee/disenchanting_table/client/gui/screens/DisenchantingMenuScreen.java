@@ -59,7 +59,7 @@ public class DisenchantingMenuScreen extends ItemCombinerScreen<DisenchantingMen
         if (!ClientConfig.render_experience_cost || mayPickupResult || player.getAbilities().instabuild) return;
 
         // guiGraphics.blit(DisenchantingTableScreen.DISENCHANTING_TABLE_LOCATION, this.leftPos + 102, this.topPos + 45, this.imageWidth, 0, 28, 21);
-        guiGraphics.blit(RenderType::guiTextured, DisenchantingTableScreen.DISENCHANTING_TABLE_LOCATION, this.leftPos + 102, this.topPos + 45, 28, 21, this.imageWidth, this.imageHeight, 256, 256);
+        // guiGraphics.blit(RenderType::guiTextured, DisenchantingTableScreen.DISENCHANTING_TABLE_LOCATION, this.leftPos + 102, this.topPos + 45, 28, 21, this.imageWidth, this.imageHeight, 256, 256);
 
         final int textPadding = 4;
         final int xStart = this.leftPos + 45;
