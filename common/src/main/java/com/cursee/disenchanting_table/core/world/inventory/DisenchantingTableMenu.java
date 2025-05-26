@@ -35,8 +35,20 @@ public class DisenchantingTableMenu extends AbstractContainerMenu {
         this.container = container;
         this.containerData = containerData;
 
-        this.addSlot(new Slot(container, 0, 27, 47) {});
-        this.addSlot(new Slot(container, 1, 76, 47));
+        this.addSlot(new Slot(container, 0, 27, 47) {
+
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return DisenchantmentHelper.canDisenchant(stack);
+            }
+        });
+        this.addSlot(new Slot(container, 1, 76, 47) {
+
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return stack.is(Items.BOOK);
+            }
+        });
         this.addSlot(new Slot(container, 2, 134, 47));
 //        this.addSlot(new Slot(container, 2, 134, 47) {
 //            @Override
